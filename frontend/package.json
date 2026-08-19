@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "laugfs-gas-frontend",
   "type": "module",
   "version": "0.0.1",
   "engines": {

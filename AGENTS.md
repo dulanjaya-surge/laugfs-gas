@@ -1,4 +1,4 @@
-# Agent Instructions
+# Laugfs Gas - Agent Instructions
 
 Monorepo with Astro frontend and Strapi CMS backend. Deployed on Railway.
 

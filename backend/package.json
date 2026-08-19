@@ -1,8 +1,8 @@
 {
-  "name": "backend",
+  "name": "laugfs-gas-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "A Strapi application",
+  "description": "Laugfs Gas - Strapi CMS backend",
   "scripts": {
     "build": "strapi build",
     "console": "strapi console",
