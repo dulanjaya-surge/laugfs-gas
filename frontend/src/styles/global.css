@@ -57,6 +57,16 @@ em {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes flameFlicker {
+  0%, 100% { transform: scale(1, 1); }
+  28% { transform: scale(0.93, 1.1); }
+  54% { transform: scale(1.06, 0.92); }
+  79% { transform: scale(0.97, 1.05); }
+}
+@keyframes flameBreathe {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
 @keyframes revealUp {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
@@ -175,8 +185,8 @@ em {
 
 /* Atropos 3D layers — size the wrapper chain to each stage and let the
    glows/drop-shadows overflow (Atropos clips .atropos-inner by default). */
-.bulb .atropos-inner { overflow: visible; }
-.bulb__img { position: absolute; inset: 0; }
+.burner .atropos-inner { overflow: visible; }
+.burner__art { position: absolute; inset: 0; }
 
 .product__atropos { height: 100%; }
 .product__atropos .atropos-inner {
@@ -437,27 +447,33 @@ em {
 }
 .energy__glow {
   position: absolute; width: 460px; height: 460px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,194,14,0.5) 0%, rgba(255,194,14,0.2) 38%, rgba(255,194,14,0) 62%);
+  background: radial-gradient(circle, rgba(80,170,255,0.42) 0%, rgba(255,194,14,0.22) 40%, rgba(255,194,14,0) 66%);
   filter: blur(30px);
 }
-.bulb { position: relative; width: 250px; height: 440px; }
-.bulb__halo {
-  position: absolute; top: 34%; left: 50%; width: 260px; height: 260px;
+.burner { position: relative; width: 470px; height: 327px; }
+.burner__halo {
+  position: absolute; left: 50%; top: 62%; width: 340px; height: 200px;
   transform: translate(-50%, -50%); border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,214,110,0.55), rgba(255,194,14,0.22) 40%, rgba(255,194,14,0) 70%);
-  filter: blur(18px); mix-blend-mode: screen;
+  background: radial-gradient(ellipse, rgba(150,215,255,0.5), rgba(60,140,240,0.22) 42%, rgba(60,140,240,0) 72%);
+  filter: blur(22px); mix-blend-mode: screen; pointer-events: none;
 }
-.bulb__core {
-  position: absolute; top: 34%; left: 50%; width: 130px; height: 130px;
-  transform: translate(-50%, -50%); border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,240,1), rgba(255,232,150,0.85) 32%, rgba(255,194,14,0.45) 55%, rgba(255,194,14,0) 74%);
-  filter: blur(6px); mix-blend-mode: screen;
-}
-.bulb img {
+.burner__svg {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block;
-  object-fit: contain;
-  filter: drop-shadow(0 0 70px rgba(255,194,14,0.75)) drop-shadow(0 0 140px rgba(255,194,14,0.35)) drop-shadow(0 24px 40px rgba(23,21,15,0.18));
+  overflow: visible;
+  filter: drop-shadow(0 0 46px rgba(70,150,255,0.42)) drop-shadow(0 22px 38px rgba(23,21,15,0.28));
   animation: floaty 8s ease-in-out infinite;
+}
+/* The flames flicker on their own axis: transform-box makes the origin the
+   base of each flame, so they stretch upward instead of scaling from centre. */
+.burner__flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: flameFlicker var(--t, 1.6s) ease-in-out var(--d, 0s) infinite;
+}
+.burner__flame-base { mix-blend-mode: screen; }
+.burner__ringglow { mix-blend-mode: screen; animation: flameBreathe 3.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .burner__svg, .burner__flame, .burner__ringglow { animation: none; }
 }
 
 /* ---------------- NUMBERS ---------------- */
@@ -756,16 +772,17 @@ em {
      the drifting orb and the floating images re-rasterize large blurs
      every frame. */
   .orb { animation: none; }
-  .bulb__img img, .product__hero img,
+  .burner__svg, .product__hero img,
   .maritime__ship, .maritime__ship img { animation: none; }
-  .bulb__img img { filter: drop-shadow(0 0 28px rgba(255, 194, 14, 0.5)); }
+  .burner__svg { filter: drop-shadow(0 0 26px rgba(70, 150, 255, 0.4)); }
+  .burner__flame, .burner__ringglow { animation: none; }
   /* Disable 3D parallax on mobile — flatten the Atropos layers so no
      perspective/preserve-3d compositing layers are created. */
   .atropos { perspective: none; transform: none; }
   .atropos-scale, .atropos-rotate, .atropos-inner { transform-style: flat; }
   [data-atropos-offset] { transform: none; }
   .energy__stage { height: 300px; }
-  .bulb { width: 200px; height: 352px; }
+  .burner { width: 360px; height: 250px; }
   /* Mobile: show the whole ship, full-bleed to the viewport edges (no
      crop). Margin-based centering because the mobile Atropos-flatten
      sets transform:none on .maritime__ship. */
@@ -790,7 +807,7 @@ em {
   .numbers__cell { border-right: none; }
   .footer__grid { grid-template-columns: 1fr; }
   .energy__stage { height: 260px; }
-  .bulb { width: 168px; height: 296px; }
+  .burner { width: 292px; height: 203px; }
   .nav__links { display: none; }
 }
 /* Mobile: 2-step dark theme toggled by JS (one class change on enter/

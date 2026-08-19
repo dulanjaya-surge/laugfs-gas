@@ -11,6 +11,59 @@ const body = pick(
   block?.body,
   "From the kitchens of ten thousand households to the industrial plants that keep production lines moving, LP Gas is the constant behind it."
 );
+
+// --- Burner geometry (viewBox 0 0 460 320) ------------------------------
+// Drawn in a shallow 3/4 perspective: every "circle" is an ellipse, so a ring
+// of ports becomes cos/sin over (rx, ry). Flames on the far half are drawn
+// before the burner body and the near half after it — that ordering is what
+// makes the crown of flames wrap around the burner instead of sitting flat.
+const CX = 230;
+const RING_CY = 226; // port ring — where the flames leave the burner
+const RING_RX = 112;
+const RING_RY = 32;
+const CAP_CY = 212; // burner cap, sits inside the ring of flames
+const PLATE_CY = 248; // hob surface
+
+const FLAME_COUNT = 16;
+const flames = Array.from({ length: FLAME_COUNT }, (_, i) => {
+  const a = ((i * 360) / FLAME_COUNT - 90) * (Math.PI / 180);
+  const depth = (Math.sin(a) + 1) / 2; // 0 = far side, 1 = near side
+  return {
+    x: +(CX + RING_RX * Math.cos(a)).toFixed(2),
+    y: +(RING_CY + RING_RY * Math.sin(a)).toFixed(2),
+    // Near flames read taller and brighter, far ones shrink back.
+    s: +(0.62 + 0.38 * depth).toFixed(3),
+    o: +(0.62 + 0.38 * depth).toFixed(2),
+    lean: +((i % 3) - 1).toFixed(0) * 2.5, // a few degrees of sway, alternating
+    near: Math.sin(a) > -0.08,
+    delay: +((i % 5) * 0.19 + (i % 3) * 0.11).toFixed(2),
+    dur: +(1.45 + (i % 4) * 0.19).toFixed(2),
+  };
+});
+const farFlames = flames.filter((f) => !f.near);
+const nearFlames = flames.filter((f) => f.near);
+
+// Burner ports: short dark ticks around the ring, so the flames read as
+// coming out of something rather than floating on the cap.
+const ports = Array.from({ length: FLAME_COUNT }, (_, i) => {
+  const a = ((i * 360) / FLAME_COUNT - 90) * (Math.PI / 180);
+  return {
+    x: +(CX + (RING_RX - 3) * Math.cos(a)).toFixed(2),
+    y: +(RING_CY + (RING_RY - 1) * Math.sin(a)).toFixed(2),
+    near: Math.sin(a) > -0.08,
+  };
+});
+
+// Pan supports, radiating outward across the hob plate.
+const arms = [38, 142, 218, 322].map((deg) => {
+  const a = (deg * Math.PI) / 180;
+  return {
+    x1: +(CX + 126 * Math.cos(a)).toFixed(2),
+    y1: +(PLATE_CY + 36 * Math.sin(a)).toFixed(2),
+    x2: +(CX + 196 * Math.cos(a)).toFixed(2),
+    y2: +(PLATE_CY + 56 * Math.sin(a)).toFixed(2),
+  };
+});
 ---
 
 <section id="energy" class="energy">
@@ -22,14 +75,155 @@ const body = pick(
       <p>{body}</p>
       <div class="energy__stage">
         <div class="energy__glow" id="energyGlow"></div>
-        <div class="bulb atropos">
+        <div class="burner atropos">
           <div class="atropos-scale">
             <div class="atropos-rotate">
               <div class="atropos-inner">
-                <div class="bulb__halo"></div>
-                <div class="bulb__core"></div>
-                <div class="bulb__img" data-atropos-offset="4">
-                  <img src="/design/light-bulb.png" alt="Light bulb" />
+                <div class="burner__halo"></div>
+                <div class="burner__art" data-atropos-offset="4">
+                  <svg
+                    class="burner__svg"
+                    viewBox="0 0 460 320"
+                    role="img"
+                    aria-label="A gas cooker burner alight with a crown of blue flames"
+                  >
+                    <defs>
+                      <!-- Flame envelope: hot blue at the base, cooling upward,
+                           with only a whisper of gold right at the tip. -->
+                      <linearGradient id="flameOuter" x1="0" y1="1" x2="0" y2="0">
+                        <stop offset="0%" stop-color="#cfeeff" stop-opacity="0.9" />
+                        <stop offset="18%" stop-color="#5ab4ff" stop-opacity="0.78" />
+                        <stop offset="48%" stop-color="#2372e6" stop-opacity="0.5" />
+                        <stop offset="76%" stop-color="#1a49b4" stop-opacity="0.22" />
+                        <stop offset="92%" stop-color="#ffc20e" stop-opacity="0.16" />
+                        <stop offset="100%" stop-color="#ffc20e" stop-opacity="0" />
+                      </linearGradient>
+                      <!-- The bright inner cone that sits low in a gas flame. -->
+                      <linearGradient id="flameInner" x1="0" y1="1" x2="0" y2="0">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92" />
+                        <stop offset="38%" stop-color="#8ad6ff" stop-opacity="0.72" />
+                        <stop offset="100%" stop-color="#3f9bff" stop-opacity="0" />
+                      </linearGradient>
+                      <radialGradient id="ringGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#a8e2ff" stop-opacity="0.42" />
+                        <stop offset="50%" stop-color="#2f8ae6" stop-opacity="0.18" />
+                        <stop offset="100%" stop-color="#2f8ae6" stop-opacity="0" />
+                      </radialGradient>
+                      <radialGradient id="plateMetal" cx="50%" cy="30%" r="72%">
+                        <stop offset="0%" stop-color="#3a342b" />
+                        <stop offset="70%" stop-color="#191510" />
+                        <stop offset="100%" stop-color="#0c0a07" />
+                      </radialGradient>
+                      <linearGradient id="bodyMetal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#4d463b" />
+                        <stop offset="55%" stop-color="#221d17" />
+                        <stop offset="100%" stop-color="#0f0d09" />
+                      </linearGradient>
+                      <linearGradient id="capMetal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#6a6155" />
+                        <stop offset="46%" stop-color="#3a332a" />
+                        <stop offset="100%" stop-color="#1b1712" />
+                      </linearGradient>
+
+                      <radialGradient id="flameBase" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#bfe6ff" stop-opacity="0.65" />
+                        <stop offset="55%" stop-color="#3f9bff" stop-opacity="0.28" />
+                        <stop offset="100%" stop-color="#3f9bff" stop-opacity="0" />
+                      </radialGradient>
+
+                      <!-- One flame: base at (0,0), tip at (0,-100). Slim waist
+                           and a drawn-out tip, so it reads as flame not capsule. -->
+                      <g id="flameShape">
+                        <ellipse class="burner__flame-base" cx="0" cy="-1" rx="16" ry="6.5" fill="url(#flameBase)" />
+                        <path
+                          class="burner__flame-out"
+                          d="M -11 0 C -13.5 -14 -13 -30 -8.5 -48 C -5.5 -62 -2.6 -78 -1 -96
+                             C -0.4 -100 0.4 -100 1 -96 C 2.6 -78 5.5 -62 8.5 -48
+                             C 13 -30 13.5 -14 11 0 C 6 3.5 -6 3.5 -11 0 Z"
+                          fill="url(#flameOuter)"
+                        />
+                        <path
+                          class="burner__flame-in"
+                          d="M -6 0 C -7.5 -10 -6 -20 -3 -30 C -1.6 -35 -0.6 -38 0 -38
+                             C 0.6 -38 1.6 -35 3 -30 C 6 -20 7.5 -10 6 0 C 3 2 -3 2 -6 0 Z"
+                          fill="url(#flameInner)"
+                        />
+                      </g>
+                    </defs>
+
+                    <!-- Hob surface + pan supports -->
+                    <ellipse cx={CX} cy={PLATE_CY + 10} rx="192" ry="44" fill="#000" opacity="0.28" />
+                    <ellipse cx={CX} cy={PLATE_CY} rx="186" ry="52" fill="url(#plateMetal)" />
+                    <ellipse
+                      cx={CX} cy={PLATE_CY} rx="186" ry="52"
+                      fill="none" stroke="rgba(255,194,14,0.14)" stroke-width="1.1"
+                    />
+                    {arms.map((m) => (
+                      <line
+                        x1={m.x1} y1={m.y1} x2={m.x2} y2={m.y2}
+                        stroke="#332d25" stroke-width="8" stroke-linecap="round"
+                      />
+                    ))}
+
+                    <!-- Far half of the crown (behind the burner body) -->
+                    <g class="burner__ring burner__ring--far">
+                      {farFlames.map((f) => (
+                        <g
+                          transform={`translate(${f.x} ${f.y}) rotate(${f.lean}) scale(${f.s})`}
+                          opacity={f.o}
+                        >
+                          <use
+                            class="burner__flame"
+                            href="#flameShape"
+                            style={`--d:${f.delay}s;--t:${f.dur}s`}
+                          />
+                        </g>
+                      ))}
+                    </g>
+
+                    <!-- Burner body, port ring and cap -->
+                    <ellipse cx={CX} cy={RING_CY + 8} rx={RING_RX} ry={RING_RY + 4} fill="url(#bodyMetal)" />
+                    {ports.map((p) => (
+                      <rect
+                        x={p.x - 2.2} y={p.y - 4} width="4.4" height="8" rx="2"
+                        fill="#0b0906" opacity={p.near ? 0.9 : 0.55}
+                      />
+                    ))}
+                    <ellipse
+                      cx={CX} cy={RING_CY} rx={RING_RX} ry={RING_RY}
+                      fill="none" stroke="rgba(150,205,255,0.32)" stroke-width="1.8"
+                    />
+                    <ellipse cx={CX} cy={CAP_CY} rx="84" ry="24" fill="url(#capMetal)" />
+                    <ellipse
+                      cx={CX} cy={CAP_CY} rx="84" ry="24"
+                      fill="none" stroke="rgba(255,194,14,0.2)" stroke-width="1.1"
+                    />
+                    <ellipse cx={CX} cy={CAP_CY - 4} rx="58" ry="15" fill="rgba(150,205,255,0.1)" />
+                    <ellipse cx={CX} cy={CAP_CY - 1} rx="13" ry="4.5" fill="#0b0906" opacity="0.9" />
+
+                    <!-- Near half of the crown (in front of the body) -->
+                    <g class="burner__ring burner__ring--near">
+                      {nearFlames.map((f) => (
+                        <g
+                          transform={`translate(${f.x} ${f.y}) rotate(${f.lean}) scale(${f.s})`}
+                          opacity={f.o}
+                        >
+                          <use
+                            class="burner__flame"
+                            href="#flameShape"
+                            style={`--d:${f.delay}s;--t:${f.dur}s`}
+                          />
+                        </g>
+                      ))}
+                    </g>
+
+                    <!-- Light the crown throws back onto the burner -->
+                    <ellipse
+                      class="burner__ringglow"
+                      cx={CX} cy={RING_CY - 26} rx="150" ry="74"
+                      fill="url(#ringGlow)"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>
