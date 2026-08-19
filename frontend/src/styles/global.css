@@ -297,6 +297,9 @@ em {
 }
 .brand { font-weight: 800; font-size: 20px; letter-spacing: -0.02em; }
 .brand__accent { color: var(--gold); }
+/* Uploaded logos are height-constrained so any aspect ratio sits on the same
+   baseline as the text wordmark they replace. */
+.brand__img { height: 34px; width: auto; display: block; }
 .nav__links {
   display: flex; gap: 30px; margin-left: 18px;
   font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
@@ -693,6 +696,7 @@ em {
 /* ---------------- FOOTER ---------------- */
 .footer { padding: 40px 0 70px; }
 .footer__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
+.footer__logo { height: 30px; width: auto; display: block; }
 .footer__brand { font-weight: 800; font-size: 17px; letter-spacing: -0.02em; }
 .footer__brand span { color: #c89a00; }
 .footer__addr { margin: 16px 0 0; font-size: 14.5px; line-height: 1.8; color: var(--muted); }
@@ -803,6 +807,7 @@ em {
 }
 @media (max-width: 520px) {
   .hero__title h1 { font-size: 42px; }
+  .brand__img { height: 28px; }
   .numbers__grid { grid-template-columns: 1fr; }
   .numbers__cell { border-right: none; }
   .footer__grid { grid-template-columns: 1fr; }

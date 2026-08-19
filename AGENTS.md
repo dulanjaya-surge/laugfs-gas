@@ -107,7 +107,11 @@ blocks; the frontend renders whatever blocks a page contains.
   `seo` (component), and `sections` (a **dynamic zone** of section components).
   The home page is a `Page` with `slug: "home"`.
 - **`Global`** (single type — `api/global`): site-wide content shared on every
-  page — `defaultSeo`, `navLinks`, `footerColumns`, `footerAddress/Phone/Fax`.
+  page — `defaultSeo`, `logo`, `logoOnDark`, `favicon`, `navLinks`,
+  `footerColumns`, `footerAddress/Phone/Fax`. `logo` is the primary mark (used
+  in the footer); `logoOnDark` is the light-on-dark variant used by the hero
+  nav, falling back to `logo`. With neither set the text wordmark renders.
+  `favicon` overrides the icon bundled in `frontend/public`.
 
 ### Components (`backend/src/components/`)
 

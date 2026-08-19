@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import Footer from "../components/sections/Footer.astro";
-import { mediaUrl } from "../lib/strapi";
+import { mediaUrl, mediaMime } from "../lib/strapi";
 
 const { title, global, seo } = Astro.props;
 
@@ -15,12 +15,16 @@ const keywords = seo?.keywords || defaultSeo.keywords || "";
 const shareImage = mediaUrl(seo?.shareImage ?? defaultSeo.shareImage, "");
 // noindex defaults to true (site is not meant to be indexed yet)
 const noindex = seo?.noindex ?? defaultSeo.noindex ?? true;
+
+// Favicon comes from Global when set, otherwise the icon bundled in /public.
+const faviconUrl = mediaUrl(global?.favicon, "/favicon.svg");
+const faviconType = mediaMime(global?.favicon, "image/svg+xml");
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type={faviconType} href={faviconUrl} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}

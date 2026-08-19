@@ -1,7 +1,11 @@
 ---
-import { pick, arr } from "../../lib/content";
+import { pick, arr, mediaUrl, mediaAlt } from "../../lib/content";
 
 const { global } = Astro.props;
+
+// The footer sits on the light page background, so it takes the primary logo.
+const logoUrl = mediaUrl(global?.logo, "");
+const logoAlt = mediaAlt(global?.logo, "LAUGFS Gas");
 
 const address = pick(global?.footerAddress, "101, Maya Avenue, Colombo 06, Sri Lanka");
 const phone = pick(global?.footerPhone, "Tel +94 11 5 566 222");
@@ -40,7 +44,11 @@ const columns = arr(global?.footerColumns, [
 <footer class="footer">
   <div class="footer__grid">
     <div>
-      <div class="footer__brand">LAUGFS<span>GAS</span></div>
+      {logoUrl ? (
+        <img class="footer__logo" src={logoUrl} alt={logoAlt} />
+      ) : (
+        <div class="footer__brand">LAUGFS<span>GAS</span></div>
+      )}
       <p class="footer__addr">
         {address}<br />{phone}<br />{fax}
       </p>

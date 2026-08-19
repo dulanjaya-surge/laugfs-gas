@@ -9,7 +9,10 @@ const STRAPI_URL =
   (typeof process !== "undefined" ? process.env.STRAPI_URL : undefined) ||
   "http://localhost:1337";
 
-type StrapiMedia = { url?: string; alternativeText?: string | null } | null | undefined;
+type StrapiMedia =
+  | { url?: string; alternativeText?: string | null; mime?: string | null }
+  | null
+  | undefined;
 
 /** Absolute URL for a Strapi media object; returns `fallback` when missing. */
 export function mediaUrl(media: StrapiMedia, fallback = ""): string {
@@ -21,6 +24,11 @@ export function mediaUrl(media: StrapiMedia, fallback = ""): string {
 /** Alt text from a Strapi media object; returns `fallback` when unset. */
 export function mediaAlt(media: StrapiMedia, fallback = ""): string {
   return media?.alternativeText || fallback;
+}
+
+/** MIME type of a Strapi media object; returns `fallback` when unset. */
+export function mediaMime(media: StrapiMedia, fallback = ""): string {
+  return media?.mime || fallback;
 }
 
 /** Fetch a Page by slug (sections are deep-populated by the controller). */

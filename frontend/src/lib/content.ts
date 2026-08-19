@@ -1,5 +1,5 @@
 // Small content helpers shared across section components.
-export { mediaUrl, mediaAlt } from "./strapi";
+export { mediaUrl, mediaAlt, mediaMime } from "./strapi";
 
 export const pick = (v: any, fallback: any) =>
   v === undefined || v === null || v === "" ? fallback : v;

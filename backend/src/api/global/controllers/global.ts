@@ -5,6 +5,9 @@ import { factories } from '@strapi/strapi';
 
 const populate = {
   defaultSeo: { populate: ['shareImage'] },
+  logo: true,
+  logoOnDark: true,
+  favicon: true,
   navLinks: true,
   footerColumns: { populate: ['links'] },
 };

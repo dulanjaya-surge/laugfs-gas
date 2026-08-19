@@ -11,6 +11,12 @@ const nav = arr(global?.navLinks, [
   { href: "#media", label: "MEDIA" },
 ]);
 
+// The nav sits on the dark hero, so prefer the light-on-dark logo and fall
+// back to the primary one; with neither uploaded the text wordmark stands.
+const navLogo = global?.logoOnDark ?? global?.logo;
+const navLogoUrl = mediaUrl(navLogo, "");
+const navLogoAlt = mediaAlt(navLogo, "LAUGFS Gas");
+
 const title = pick(block?.title, "Every cylinder is a unit of energy security.");
 const heroWords = splitWords(title, pick(block?.accent, "security"));
 const lede = pick(
@@ -54,7 +60,11 @@ const videoSrc = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&m
   <div class="hero__glow"></div>
 
   <nav class="nav">
-    <span class="brand">LAUGFS<span class="brand__accent">GAS</span></span>
+    {navLogoUrl ? (
+      <img class="brand__img" src={navLogoUrl} alt={navLogoAlt} />
+    ) : (
+      <span class="brand">LAUGFS<span class="brand__accent">GAS</span></span>
+    )}
     <div class="nav__links">
       {nav.map((l) => <a href={l.href}>{l.label}</a>)}
     </div>
