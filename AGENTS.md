@@ -21,6 +21,15 @@ Monorepo with Astro frontend and Strapi CMS backend. Deployed on Railway.
 
 ## Development
 
+### Node version
+
+Requires **Node 22+** (Astro 7 needs `>=22.12`). Managed with nvm — `.nvmrc`
+files pin `22` at the repo root and in each service:
+
+```bash
+nvm use          # picks up .nvmrc
+```
+
 ### Frontend
 
 ```bash
