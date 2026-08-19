@@ -10,6 +10,7 @@
   --card-text: #17150f;
   --card-muted: #6b6459;
   --card-border: rgba(23, 21, 15, 0.06);
+  --header-h: 81px; /* hero subtracts this so header + hero fill one screen */
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -206,8 +207,8 @@ em {
 /* ---------------- HERO ---------------- */
 .hero {
   position: relative;
-  min-height: 100vh;
-  min-height: 100dvh; /* full screen, accounting for mobile browser UI */
+  min-height: calc(100vh - var(--header-h));
+  min-height: calc(100dvh - var(--header-h)); /* full screen below the header */
   display: flex;
   flex-direction: column;
   background: #0e0d0a;
@@ -262,13 +263,11 @@ em {
 }
 
 /* Staggered entrance for hero content on load */
-.hero .nav,
 .hero__contact,
 .hero__lede p,
 .hero__actions {
   animation: heroRise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
-.hero .nav { animation-delay: 0.1s; }
 .hero__contact { animation-delay: 1.9s; }
 .hero__lede p { animation-delay: 2.05s; }
 .hero__actions { animation-delay: 2.2s; }
@@ -283,37 +282,52 @@ em {
 .hero__headline .hero__word:last-child { margin-right: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero .nav,
   .hero__contact,
   .hero__lede p,
   .hero__actions,
   .hero__headline .hero__word { animation: none; }
 }
 
+/* Sticky bar carrying the page background, so a logo with its own ground
+   blends into it. Rendered outside .page in Base.astro — .page has
+   overflow:hidden, which would make it the scroll container and stop the
+   header from ever sticking. Colors come from the theme variables, so the
+   header inverts along with the rest of the page on the scroll-driven dip. */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
 .nav {
   position: relative; z-index: 3;
   display: flex; align-items: center; gap: 34px;
-  padding: 30px 48px; color: var(--bg);
+  padding: 18px 48px; color: var(--ink);
 }
 .brand { font-weight: 800; font-size: 20px; letter-spacing: -0.02em; }
 .brand__accent { color: var(--gold); }
 /* Uploaded logos are height-constrained so any aspect ratio sits on the same
    baseline as the text wordmark they replace. */
+.brand__logo { display: block; }
 .brand__img { height: 34px; width: auto; display: block; }
+/* Only rendered when both variants are uploaded; the dark one takes over
+   while the scroll theme holds the page dark. */
+.brand__img--dark { display: none; }
+html.theme-dark .brand__img--light { display: none; }
+html.theme-dark .brand__img--dark { display: block; }
 .nav__links {
   display: flex; gap: 30px; margin-left: 18px;
   font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
 }
-.nav__links a { color: rgba(251,247,242,0.88); }
+.nav__links a { color: var(--muted); }
 .nav__links a:hover { color: var(--gold); }
 .nav__cta { margin-left: auto; display: flex; align-items: center; gap: 20px; }
 .nav__order {
   font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
-  color: rgba(251,247,242,0.88);
+  color: var(--muted);
 }
 .nav__order:hover { color: var(--gold); }
 
-.hero__title { position: relative; z-index: 3; padding: 40px 48px 0; }
+.hero__title { position: relative; z-index: 3; padding: 56px 48px 0; }
 .hero__title h1 {
   margin: 0; max-width: 15ch;
   font-size: 104px; line-height: 0.95; letter-spacing: -0.04em;
@@ -719,7 +733,8 @@ em {
   .investors__grid { grid-template-columns: 1fr; gap: 40px; }
 }
 @media (max-width: 860px) {
-  .nav { flex-wrap: wrap; gap: 14px 16px; padding: 20px 24px; }
+  :root { --header-h: 103px; } /* nav__links wrap to a second row */
+  .nav { flex-wrap: wrap; gap: 14px 16px; padding: 14px 24px; }
   .nav__order { display: none; }
   .nav__links {
     order: 3; width: 100%; margin-left: 0;
@@ -806,6 +821,7 @@ em {
   .section-head h2 { font-size: 34px; }
 }
 @media (max-width: 520px) {
+  :root { --header-h: 73px; } /* nav__links are hidden here, so one row */
   .hero__title h1 { font-size: 42px; }
   .brand__img { height: 28px; }
   .numbers__grid { grid-template-columns: 1fr; }

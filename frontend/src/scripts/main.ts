@@ -198,6 +198,9 @@ if (energy && window.matchMedia("(max-width: 860px)").matches) {
     root.style.setProperty("--card-text", mix(cardTextL, cardTextD, d));
     root.style.setProperty("--card-muted", mix(cardMutedL, cardMutedD, d));
     root.style.setProperty("--card-border", mix4(cardBorderL, cardBorderD, d));
+    // Mirror the dip as a class so CSS can make discrete swaps the variable
+    // interpolation cannot — currently the header's dark logo variant.
+    root.classList.toggle("theme-dark", d > 0.5);
   };
   const onScroll = () => {
     if (!ticking) {

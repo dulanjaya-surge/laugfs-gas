@@ -142,7 +142,12 @@ blocks; the frontend renders whatever blocks a page contains.
   section component via `sectionMap`.
 - **`layouts/Base.astro`** — html shell, orbs, fonts, client script, SEO `<head>`
   (title/description/OG/robots from `page.seo` → `global.defaultSeo` → fallback),
-  and the global `Footer`.
+  and the global `Header` + `Footer`.
+- **`components/Header.astro`** — sticky site header (logo, nav, CTAs). Rendered
+  outside `.page`, whose `overflow: hidden` would otherwise become the scroll
+  container and stop `position: sticky` from working. It takes its colors from
+  the theme variables, so it inverts with the scroll-driven dark dip; the hero
+  sizes itself with `calc(100dvh - var(--header-h))` so the two fill one screen.
 - **`components/sections/*.astro`** — one per section; receives `block` (and
   `global` where needed). Each has **hardcoded fallbacks**, so the site renders
   even if Strapi is down or a field is empty.

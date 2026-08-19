@@ -1,0 +1,45 @@
+---
+import { arr, mediaUrl, mediaAlt } from "../lib/content";
+
+const { global } = Astro.props;
+
+const nav = arr(global?.navLinks, [
+  { href: "#investors", label: "INVESTORS" },
+  { href: "#story", label: "COMPANY" },
+  { href: "#capabilities", label: "BUSINESS" },
+  { href: "#safety", label: "SAFETY" },
+  { href: "#media", label: "MEDIA" },
+]);
+
+// The header carries the page background, so the primary logo belongs here.
+// `logoOnDark` is swapped in while the scroll theme dips dark; when only one
+// of the two is uploaded it is used throughout.
+const logo = global?.logo ?? global?.logoOnDark;
+const logoDark = global?.logoOnDark;
+const logoUrl = mediaUrl(logo, "");
+const logoAlt = mediaAlt(logo, "LAUGFS Gas");
+const logoDarkUrl = logoDark && logoDark !== logo ? mediaUrl(logoDark, "") : "";
+const logoDarkAlt = mediaAlt(logoDark, "LAUGFS Gas");
+---
+
+<header class="header">
+  <nav class="nav">
+    {logoUrl ? (
+      <span class="brand__logo">
+        <img class="brand__img brand__img--light" src={logoUrl} alt={logoAlt} />
+        {logoDarkUrl && (
+          <img class="brand__img brand__img--dark" src={logoDarkUrl} alt={logoDarkAlt} />
+        )}
+      </span>
+    ) : (
+      <span class="brand">LAUGFS<span class="brand__accent">GAS</span></span>
+    )}
+    <div class="nav__links">
+      {nav.map((l) => <a href={l.href}>{l.label}</a>)}
+    </div>
+    <div class="nav__cta">
+      <a href="#order" class="nav__order">ORDER A REFILL</a>
+      <a href="#investors" class="btn btn--pill">Investor centre</a>
+    </div>
+  </nav>
+</header>
