@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sections_maritimes",
+  "info": {
+    "displayName": "Maritime",
+    "icon": "ship"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
+    "intro": { "type": "text" },
+    "linkLabel": { "type": "string" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "vessels": { "type": "component", "repeatable": true, "component": "home.vessel" }
+  }
+}

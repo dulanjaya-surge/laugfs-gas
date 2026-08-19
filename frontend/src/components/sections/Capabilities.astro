@@ -1,0 +1,87 @@
+---
+import { mediaUrl, pick, arr, splitWords } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const capWords = splitWords(
+  pick(block?.heading?.heading, "Three ways we reach every corner."),
+  pick(block?.heading?.accent, "every")
+);
+const intro = pick(
+  block?.intro,
+  "From household kitchens to industrial plants and the ships that supply them, LP Gas moves through three connected lines of business."
+);
+const statValue = pick(block?.statValue, "1.4M");
+const statLabel = pick(block?.statLabel, "households served each year");
+
+const capFallbackImg = [
+  "https://www.laugfsgas.lk/images/gas-1.jpg",
+  "https://www.laugfsgas.lk/images/s1.jpg",
+  "https://www.laugfsgas.lk/images/s3.jpg",
+];
+const items = arr(
+  block?.items?.map((c: any, i: number) => ({
+    href: pick(c.href, "#energy"),
+    img: mediaUrl(c.image, capFallbackImg[i] ?? capFallbackImg[0]),
+    alt: pick(c.image?.alternativeText, c.title),
+    title: c.title,
+    num: c.number,
+    body: c.body,
+  })),
+  [
+    { href: "#energy", img: capFallbackImg[0], alt: "Domestic LP Gas cylinders", title: "Domestic", num: "01", body: "2.3kg to 37.5kg cylinders delivered through a nationwide dealer network." },
+    { href: "#energy", img: capFallbackImg[1], alt: "LAUGFS Terminals storage facility", title: "Industrial &amp; bulk", num: "02", body: "Bulk supply, storage and reticulation for plants, hotels and factories." },
+    { href: "#maritime", img: capFallbackImg[2], alt: "LAUGFS Maritime gas carrier", title: "Maritime", num: "03", body: "A fleet of gas carriers moving LP Gas across regional trade routes." },
+  ]
+);
+---
+
+<section id="capabilities" class="capabilities">
+  <div class="wrap wrap--wide">
+    <div class="cap__grid">
+      <div class="cap__intro">
+        <h2 class="cap__headline">
+          {capWords.map((w, i) => (
+            <span class="cap__word" style={`--d:${(i * 0.045).toFixed(3)}s`}>
+              {w.accent ? <em>{w.t}</em> : w.t}
+            </span>
+          ))}
+        </h2>
+        <p>{intro}</p>
+        <div class="cap__stat">
+          <span class="cap__diamond">◆</span>
+          <span class="cap__statnum count">{statValue}</span>
+          <span class="cap__statlabel">{statLabel}</span>
+        </div>
+        <div class="cap__buttons">
+          <a href="#energy" class="btn btn--soft">Our products</a>
+          <a href="#contact" class="btn btn--gold-grad">Find a dealer</a>
+        </div>
+      </div>
+
+      <!-- draggable rail + handle -->
+      <div class="cap__rail" id="capRail">
+        <div class="cap__track"></div>
+        <div class="cap__handle" id="capHandle" role="slider" aria-label="Scroll businesses" tabindex="0" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- wheel of cards -->
+      <div class="cap__cards" id="capCards">
+        {items.map((c, i) => (
+          <a href={c.href} class="cap__card" data-card={i}>
+            <img src={c.img} alt={c.alt} />
+            <div class="cap__cardbody">
+              <div class="cap__cardhead">
+                <span class="cap__cardtitle" set:html={c.title} />
+                <span class="cap__cardnum">{c.num}</span>
+              </div>
+              <div class="cap__carddesc">{c.body}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

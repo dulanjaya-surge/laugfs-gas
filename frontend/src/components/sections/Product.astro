@@ -1,0 +1,71 @@
+---
+import { mediaUrl, mediaAlt, pick, arr, splitAccent } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.heading?.eyebrow, "THE CYLINDER");
+const heading = splitAccent(
+  pick(block?.heading?.heading, "Built for the kitchens of a nation."),
+  pick(block?.heading?.accent, "nation")
+);
+const image = mediaUrl(block?.image, "/design/gas.png");
+const imageAlt = mediaAlt(block?.image, "LAUGFS Gas cylinder");
+const note = pick(block?.note, "Pressure-tested, sealed and inspected before it leaves the plant.");
+const specs = arr(block?.specs, [
+  { value: "12.5", unit: "kg", label: "DOMESTIC CYLINDER" },
+  { value: "37.5", unit: "kg", label: "INDUSTRIAL CYLINDER" },
+  { value: "10,000+", unit: "", label: "DEALERS ISLAND WIDE" },
+  { value: "26", unit: "", label: "REGIONAL DISTRIBUTORS" },
+]);
+---
+
+<div class="wrap">
+  <section id="product" class="product">
+    <div class="section-head reveal-group">
+      <div class="eyebrow">{eyebrow}</div>
+      <h2>{heading.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+    </div>
+    <div class="product__grid reveal-group">
+      <div class="product__col product__col--right">
+        <div>
+          <div class="product__num"><span class="count">{specs[0]?.value}</span>{specs[0]?.unit && <span>{specs[0].unit}</span>}</div>
+          <div class="product__lab">{specs[0]?.label}</div>
+        </div>
+        <div>
+          <div class="product__num"><span class="count">{specs[1]?.value}</span>{specs[1]?.unit && <span>{specs[1].unit}</span>}</div>
+          <div class="product__lab">{specs[1]?.label}</div>
+        </div>
+        <div class="product__note">
+          <p>{note}</p>
+        </div>
+      </div>
+
+      <div class="product__hero">
+        <div class="atropos product__atropos">
+          <div class="atropos-scale">
+            <div class="atropos-rotate">
+              <div class="atropos-inner">
+                <div class="product__halo" data-atropos-offset="-2"></div>
+                <div class="product__cyl" data-atropos-offset="4">
+                  <img src={image} alt={imageAlt} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product__col">
+        <div>
+          <div class="product__num"><span class="count">{specs[2]?.value}</span>{specs[2]?.unit && <span>{specs[2].unit}</span>}</div>
+          <div class="product__lab">{specs[2]?.label}</div>
+        </div>
+        <div>
+          <div class="product__num"><span class="count">{specs[3]?.value}</span>{specs[3]?.unit && <span>{specs[3].unit}</span>}</div>
+          <div class="product__lab">{specs[3]?.label}</div>
+        </div>
+        <a href="#order" class="btn btn--gold-grad">Order a refill</a>
+      </div>
+    </div>
+  </section>
+</div>

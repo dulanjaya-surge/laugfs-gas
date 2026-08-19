@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_sections_investors",
+  "info": {
+    "displayName": "Investors",
+    "icon": "briefcase"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
+    "intro": { "type": "text" },
+    "reports": { "type": "component", "repeatable": true, "component": "home.report" }
+  }
+}

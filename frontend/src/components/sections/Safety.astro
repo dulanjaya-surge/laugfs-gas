@@ -1,0 +1,56 @@
+---
+import { pick, arr, splitAccent } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.heading?.eyebrow, "SAFETY");
+const heading = splitAccent(
+  pick(block?.heading?.heading, "LP Gas is safe when it is handled properly."),
+  pick(block?.heading?.accent, "handled")
+);
+const intro = pick(
+  block?.intro,
+  "Three habits cover almost every household risk. Keep them, and keep the hotline number where the family can find it."
+);
+const hotline = pick(block?.hotline, "+94 11 5 566 222");
+const tips = arr(
+  block?.tips?.map((t: any) => ({ n: t.number, title: t.title, body: t.body })),
+  [
+    { n: "01", title: "Store it upright", body: "Keep the cylinder standing on a firm, level surface in a ventilated space, away from drains and basements." },
+    { n: "02", title: "Check the fittings", body: "Use approved hoses and regulators, replace ageing parts, and never test for a leak with a flame." },
+    { n: "03", title: "If you smell gas", body: "Close the valve, open doors and windows, avoid switches and flames, and leave the area." },
+  ]
+);
+---
+
+<div class="wrap">
+  <section id="safety" class="safety">
+    <div class="safety__card">
+      <div class="safety__orb"></div>
+      <div class="safety__head reveal-group">
+        <div class="eyebrow eyebrow--dim">{eyebrow}</div>
+        <h2>{heading.map((p) => (p.em ? <em class="em--red">{p.t}</em> : p.t))}</h2>
+        <p>{intro}</p>
+      </div>
+      <div class="safety__grid reveal-group">
+        {tips.map((s) => (
+          <div class="safety__item">
+            <div class="safety__marker">
+              <span class="safety__dot"></span>
+              <span class="safety__idx">{s.n}</span>
+            </div>
+            <div class="safety__title">{s.title}</div>
+            <p>{s.body}</p>
+          </div>
+        ))}
+      </div>
+      <div class="safety__foot">
+        <div class="safety__hotline">
+          <span class="safety__hotlabel">24-HOUR SAFETY HOTLINE</span>
+          <span class="safety__hotnum">{hotline}</span>
+        </div>
+        <a href="#safety" class="safety__leaflet">SAFETY LEAFLET (PDF) →</a>
+      </div>
+    </div>
+  </section>
+</div>

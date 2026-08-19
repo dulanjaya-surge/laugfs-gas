@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_home_safety_tips",
+  "info": {
+    "displayName": "Safety tip",
+    "icon": "shield"
+  },
+  "options": {},
+  "attributes": {
+    "number": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    }
+  }
+}

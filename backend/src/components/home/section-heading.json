@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_home_section_headings",
+  "info": {
+    "displayName": "Section heading",
+    "icon": "title"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "accent": {
+      "type": "string"
+    }
+  }
+}

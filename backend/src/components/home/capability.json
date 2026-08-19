@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_home_capabilities",
+  "info": {
+    "displayName": "Capability",
+    "icon": "grid"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "number": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "href": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

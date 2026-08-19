@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_sections_energies",
+  "info": {
+    "displayName": "Energy",
+    "icon": "bulb"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
+    "body": { "type": "text" }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_sections_products",
+  "info": {
+    "displayName": "Product",
+    "icon": "cube"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
+    "note": { "type": "text" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "specs": { "type": "component", "repeatable": true, "component": "home.spec" }
+  }
+}

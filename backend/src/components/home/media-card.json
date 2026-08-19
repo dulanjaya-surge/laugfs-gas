@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_home_media_cards",
+  "info": {
+    "displayName": "Media card",
+    "icon": "bell"
+  },
+  "options": {},
+  "attributes": {
+    "tag": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "foot": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    }
+  }
+}

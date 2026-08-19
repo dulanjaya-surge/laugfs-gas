@@ -1,0 +1,63 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/sections/Hero.astro";
+import Capabilities from "../components/sections/Capabilities.astro";
+import Energy from "../components/sections/Energy.astro";
+import Numbers from "../components/sections/Numbers.astro";
+import Product from "../components/sections/Product.astro";
+import Safety from "../components/sections/Safety.astro";
+import Maritime from "../components/sections/Maritime.astro";
+import Story from "../components/sections/Story.astro";
+import Investors from "../components/sections/Investors.astro";
+import Media from "../components/sections/Media.astro";
+import { getPage, getGlobal } from "../lib/strapi";
+
+const sectionMap: Record<string, any> = {
+  "sections.hero": Hero,
+  "sections.capabilities": Capabilities,
+  "sections.energy": Energy,
+  "sections.numbers": Numbers,
+  "sections.product": Product,
+  "sections.safety": Safety,
+  "sections.maritime": Maritime,
+  "sections.story": Story,
+  "sections.investors": Investors,
+  "sections.media": Media,
+};
+
+const slugParam = Astro.params.slug;
+const slug = (Array.isArray(slugParam) ? slugParam.join("/") : slugParam) || "home";
+
+const [page, global] = await Promise.all([getPage(slug), getGlobal()]);
+
+// If Strapi is unreachable, still render the home layout from component defaults
+// so the site works offline / before the CMS is set up.
+const defaultHomeSections = [
+  "sections.hero",
+  "sections.capabilities",
+  "sections.energy",
+  "sections.numbers",
+  "sections.product",
+  "sections.safety",
+  "sections.maritime",
+  "sections.story",
+  "sections.investors",
+  "sections.media",
+].map((c) => ({ __component: c }));
+
+let sections = page?.sections ?? [];
+if (!sections.length && slug === "home") sections = defaultHomeSections;
+
+if (!sections.length) {
+  return new Response(null, { status: 404, statusText: "Not found" });
+}
+
+const pageTitle = page?.title ? `LAUGFS Gas — ${page.title}` : "LAUGFS Gas";
+---
+
+<Base title={pageTitle} global={global} seo={page?.seo}>
+  {sections.map((block: any) => {
+    const Section = sectionMap[block.__component];
+    return Section ? <Section block={block} global={global} /> : null;
+  })}
+</Base>

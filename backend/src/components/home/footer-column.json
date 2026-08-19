@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_home_footer_columns",
+  "info": {
+    "displayName": "Footer column",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.nav-link"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+---
+import { mediaUrl, mediaAlt, pick, arr, splitAccent } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.heading?.eyebrow, "MARITIME &amp; LOGISTICS");
+const heading = splitAccent(
+  pick(block?.heading?.heading, "Three ships carry the region's LP Gas."),
+  pick(block?.heading?.accent, "LP Gas")
+);
+const intro = pick(
+  block?.intro,
+  "LAUGFS Maritime Services provides ocean freight and logistics to the LPG downstream industry across South and South-East Asia, on its own fleet."
+);
+const linkLabel = pick(block?.linkLabel, "LAUGFSMARITIME.COM →");
+const image = mediaUrl(block?.image, "/design/ship.png");
+const imageAlt = mediaAlt(block?.image, "LAUGFS Maritime gas carrier");
+const vessels = arr(
+  block?.vessels?.map((v: any) => ({ n: v.number, title: v.title, body: v.body })),
+  [
+    { n: "01", title: "Gas Challenger", body: "Regional LPG carrier serving the Indian Ocean Rim trade." },
+    { n: "02", title: "Gas Success", body: "Feeds the Hambantota terminal and downstream demand." },
+    { n: "03", title: "Gas Courage", body: "Ocean freight for South and South-East Asian routes." },
+  ]
+);
+---
+
+<div class="wrap">
+  <section id="maritime" class="maritime">
+    <div class="maritime__head reveal-group">
+      <div>
+        <div class="eyebrow" set:html={eyebrow} />
+        <h2>{heading.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+      </div>
+      <div>
+        <p>{intro}</p>
+        <a href="#maritime" class="link-underline">{linkLabel}</a>
+      </div>
+    </div>
+
+    <div class="maritime__stage">
+      <div class="maritime__glow"></div>
+      <div class="maritime__ship atropos">
+        <div class="atropos-scale">
+          <div class="atropos-rotate">
+            <div class="atropos-inner">
+              <div class="maritime__shipglow" data-atropos-offset="-3"></div>
+              <img src={image} alt={imageAlt} data-atropos-offset="3" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="maritime__waterline"></div>
+      <div class="maritime__cap maritime__cap--left">INDIAN OCEAN RIM</div>
+      <div class="maritime__cap maritime__cap--right">OWN FLEET — 3 VESSELS</div>
+    </div>
+
+    <div class="maritime__grid reveal-group">
+      {vessels.map((v) => (
+        <div class="maritime__cell">
+          <div class="maritime__idx">{v.n}</div>
+          <div class="maritime__name">{v.title}</div>
+          <p>{v.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</div>

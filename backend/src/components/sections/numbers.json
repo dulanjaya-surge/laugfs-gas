@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_sections_numbers",
+  "info": {
+    "displayName": "Numbers",
+    "icon": "chartBubble"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
+    "stats": { "type": "component", "repeatable": true, "component": "home.stat" }
+  }
+}

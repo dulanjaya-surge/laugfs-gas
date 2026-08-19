@@ -1,0 +1,50 @@
+---
+import { pick, arr, splitAccent } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.heading?.eyebrow, "INVESTOR RELATIONS");
+const heading = splitAccent(
+  pick(block?.heading?.heading, "Every unit of energy is also a unit of return."),
+  pick(block?.heading?.accent, "return")
+);
+const intro = pick(
+  block?.intro,
+  "Keep up to date with our share prices and upcoming events. Read our recent and archived releases, first half results, annual reports, presentations, publications and financial statements."
+);
+const reports = arr(block?.reports, [
+  { title: "Annual Report 2024/25", sub: "Full year performance and governance", tag: "PDF" },
+  { title: "Annual Report 2023/24", sub: "Previous financial year, archived", tag: "PDF" },
+  { title: "Quarterly financial statements", sub: "Interim results, updated each quarter", tag: "WEB" },
+  { title: "Releases &amp; presentations", sub: "Announcements and investor decks", tag: "ARCHIVE" },
+]);
+---
+
+<div class="wrap">
+  <section id="investors" class="investors">
+    <div class="investors__card">
+      <div class="investors__grid">
+        <div class="investors__intro reveal-group">
+          <div class="eyebrow">{eyebrow}</div>
+          <h2>{heading.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+          <p>{intro}</p>
+          <div class="investors__buttons">
+            <a href="#investors" class="btn btn--gold-grad">Investor centre</a>
+            <a href="#investors" class="btn btn--soft">Share price &amp; events</a>
+          </div>
+        </div>
+        <div class="investors__list reveal-group">
+          {reports.map((r) => (
+            <a href="#investors" class="investors__row">
+              <span class="investors__rowtext">
+                <span class="investors__rowtitle" set:html={r.title} />
+                <span class="investors__rowsub">{r.sub}</span>
+              </span>
+              <span class="investors__tag">{r.tag}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

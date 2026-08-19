@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_sections_safeties",
+  "info": {
+    "displayName": "Safety",
+    "icon": "shield"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
+    "intro": { "type": "text" },
+    "hotline": { "type": "string" },
+    "tips": { "type": "component", "repeatable": true, "component": "home.safety-tip" }
+  }
+}

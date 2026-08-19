@@ -1,0 +1,45 @@
+---
+import { mediaUrl, mediaAlt, pick } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const heading = pick(block?.heading, "From a humble start to the country's second LPG downstream player.");
+const bodyOne = pick(
+  block?.bodyOne,
+  "In the year 2001, when the government of Sri Lanka decided to liberalize the LPG industry, LAUGFS Gas commenced its operations as a limited liability company in a humble way with an intention of becoming the second fully fledged LPG downstream player in Sri Lanka."
+);
+const bodyTwo = pick(
+  block?.bodyTwo,
+  "The remarkable growth story of LAUGFS Gas was fuelled by a relentless pursuit for success, a pioneering vision and an unyielding commitment to quality and service excellence, that have made LAUGFS a household brand synonymous with trust."
+);
+const image = mediaUrl(block?.image, "https://www.laugfsgas.lk/images/laugfs-people.jpg");
+const imageAlt = mediaAlt(block?.image, "LAUGFS people");
+const badgeValue = pick(block?.badgeValue, "45,000MT");
+const badgeLabel = pick(block?.badgeLabel, "TERMINAL EXTENSION UNDERWAY");
+---
+
+<div class="wrap">
+  <section id="story" class="story">
+    <div class="story__grid">
+      <div class="story__media">
+        <div class="story__photo">
+          <img src={image} alt={imageAlt} />
+        </div>
+        <div class="story__badge">
+          <div class="story__badgenum count">{badgeValue}</div>
+          <div class="story__badgelab">{badgeLabel}</div>
+        </div>
+      </div>
+      <div class="story__body reveal-group">
+        <div class="eyebrow">OUR STORY</div>
+        <h2>{heading}</h2>
+        <p>{bodyOne}</p>
+        <p>{bodyTwo}</p>
+        <div class="story__links">
+          <a href="#story" class="link-underline">READ THE FULL STORY →</a>
+          <a href="#story" class="link-underline">MILESTONES →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

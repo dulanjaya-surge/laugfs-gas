@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_home_specs",
+  "info": {
+    "displayName": "Spec",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "unit": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    }
+  }
+}

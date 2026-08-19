@@ -1,0 +1,66 @@
+---
+import { pick, arr } from "../../lib/content";
+
+const { global } = Astro.props;
+
+const address = pick(global?.footerAddress, "101, Maya Avenue, Colombo 06, Sri Lanka");
+const phone = pick(global?.footerPhone, "Tel +94 11 5 566 222");
+const fax = pick(global?.footerFax, "Fax +94 11 5 577 824");
+const columns = arr(global?.footerColumns, [
+  {
+    title: "INVESTORS",
+    links: [
+      { label: "Investor relations", href: "#investors" },
+      { label: "Financial information", href: "#investors" },
+      { label: "Annual reports", href: "#investors" },
+      { label: "Share price &amp; events", href: "#investors" },
+    ],
+  },
+  {
+    title: "COMPANY",
+    links: [
+      { label: "At a glance", href: "#capabilities" },
+      { label: "Our story", href: "#story" },
+      { label: "Subsidiaries", href: "#maritime" },
+      { label: "Media releases", href: "#media" },
+    ],
+  },
+  {
+    title: "BUSINESS &amp; SUPPORT",
+    links: [
+      { label: "Domestic", href: "#capabilities" },
+      { label: "Industrial and bulk", href: "#capabilities" },
+      { label: "Specialty services", href: "#capabilities" },
+      { label: "Safety", href: "#safety" },
+    ],
+  },
+]);
+---
+
+<footer class="footer">
+  <div class="footer__grid">
+    <div>
+      <div class="footer__brand">LAUGFS<span>GAS</span></div>
+      <p class="footer__addr">
+        {address}<br />{phone}<br />{fax}
+      </p>
+    </div>
+    {columns.map((col) => (
+      <div>
+        <div class="footer__col" set:html={col.title} />
+        <div class="footer__links">
+          {(col.links ?? []).map((l) => <a href={l.href} set:html={l.label} />)}
+        </div>
+      </div>
+    ))}
+  </div>
+  <div class="footer__bottom">
+    <span>© 2026 LAUGFS Gas PLC. All rights reserved.</span>
+    <span>Colombo Stock Exchange — LGL.N0000</span>
+    <div class="footer__social">
+      <a href="#media">Facebook</a>
+      <a href="#media">LinkedIn</a>
+      <a href="#media">Privacy</a>
+    </div>
+  </div>
+</footer>

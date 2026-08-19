@@ -1,0 +1,93 @@
+---
+import { mediaUrl, mediaAlt, pick, arr, splitWords } from "../../lib/content";
+
+const { block, global } = Astro.props;
+
+const nav = arr(global?.navLinks, [
+  { href: "#investors", label: "INVESTORS" },
+  { href: "#story", label: "COMPANY" },
+  { href: "#capabilities", label: "BUSINESS" },
+  { href: "#safety", label: "SAFETY" },
+  { href: "#media", label: "MEDIA" },
+]);
+
+const title = pick(block?.title, "Every cylinder is a unit of energy security.");
+const heroWords = splitWords(title, pick(block?.accent, "security"));
+const lede = pick(
+  block?.lede,
+  "LAUGFS Gas PLC supplies LP Gas across Sri Lanka and operates the largest LPG transshipment terminal in South Asia, with its own fleet serving the Indian Ocean Rim."
+);
+const phone = pick(block?.phone, "Tel +94 11 5 566 222");
+const address = pick(block?.address, "101, Maya Avenue, Colombo 06");
+const poster = mediaUrl(block?.poster, "https://www.laugfsgas.lk/images/gas-1.jpg");
+const posterAlt = mediaAlt(block?.poster, "LAUGFS Gas delivery");
+
+// Accept a full YouTube URL or a bare 11-char ID; fall back to the default.
+const DEFAULT_VIDEO_ID = "cOwGuBiRu0A";
+function youtubeId(input?: string): string {
+  const s = (input ?? "").trim();
+  const m = s.match(
+    /(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([\w-]{11})/
+  );
+  if (m) return m[1];
+  if (/^[\w-]{11}$/.test(s)) return s;
+  return DEFAULT_VIDEO_ID;
+}
+const videoId = youtubeId(block?.videoUrl);
+const videoSrc = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&disablekb=1&fs=0&iv_load_policy=3`;
+---
+
+<section class="hero">
+  <div class="hero__bg">
+    <img class="hero__poster" src={poster} alt={posterAlt} />
+    <iframe
+      class="hero__video"
+      data-src={videoSrc}
+      title="LAUGFS Gas"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      referrerpolicy="strict-origin-when-cross-origin"
+      aria-hidden="true"
+      tabindex="-1"
+      loading="lazy"></iframe>
+  </div>
+  <div class="hero__scrim"></div>
+  <div class="hero__glow"></div>
+
+  <nav class="nav">
+    <span class="brand">LAUGFS<span class="brand__accent">GAS</span></span>
+    <div class="nav__links">
+      {nav.map((l) => <a href={l.href}>{l.label}</a>)}
+    </div>
+    <div class="nav__cta">
+      <a href="#order" class="nav__order">ORDER A REFILL</a>
+      <a href="#investors" class="btn btn--pill">Investor centre</a>
+    </div>
+  </nav>
+
+  <div class="hero__title">
+    <h1 class="hero__headline">
+      {heroWords.map((w, i) => (
+        <span
+          class:list={["hero__word", { "hero__accent": w.accent }]}
+          style={`--d:${(0.3 + i * 0.15).toFixed(3)}s`}
+        >
+          {w.t}
+        </span>
+      ))}
+    </h1>
+  </div>
+
+  <div class="hero__foot">
+    <div class="hero__contact">
+      {phone}<br />{address}
+    </div>
+    <div class="hero__lede">
+      <p>{lede}</p>
+      <div class="hero__actions">
+        <a href="#investors" class="btn btn--gold">Annual Report 2024/25</a>
+        <a href="#investors" class="btn btn--ghost">Financials</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero__rule"></div>
+</section>

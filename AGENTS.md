@@ -87,14 +87,75 @@ Each service has `railway.toml` with build/deploy config.
 - Content types defined in `backend/src/api/`
 - Use environment variables for all config
 
-## Fetching Content
+## Content Model (Strapi ↔ Astro)
 
-Frontend fetches from Strapi REST API:
+The site is a **CMS-driven page builder**. Pages are composed from section
+blocks; the frontend renders whatever blocks a page contains.
 
-```javascript
-const response = await fetch(`${import.meta.env.STRAPI_URL}/api/posts`);
-const { data } = await response.json();
-```
+### Strapi content types (`backend/src/`)
+
+- **`Page`** (collection type — `api/page`): `title`, `slug` (uid),
+  `seo` (component), and `sections` (a **dynamic zone** of section components).
+  The home page is a `Page` with `slug: "home"`.
+- **`Global`** (single type — `api/global`): site-wide content shared on every
+  page — `defaultSeo`, `navLinks`, `footerColumns`, `footerAddress/Phone/Fax`.
+
+### Components (`backend/src/components/`)
+
+- **`sections/*`** — one component per page section, added to a Page's dynamic
+  zone: `hero, capabilities, energy, numbers, product, safety, maritime, story,
+  investors, media`. Section components hold that section's fields and nest the
+  shared sub-components below.
+- **`home/*`** — reusable sub-components: `section-heading` (heading + `accent`
+  word), `capability`, `stat`, `spec`, `safety-tip`, `vessel`, `report`,
+  `media-card`, `nav-link`, `footer-column`.
+- **`shared/seo`** — `metaTitle`, `metaDescription`, `keywords`, `shareImage`,
+  `noindex` (default `true`). Used by `Page.seo` and `Global.defaultSeo`.
+
+### Deep-populate + seed + permissions
+
+- Dynamic zones/components are **not** auto-populated. The `page` and `global`
+  controllers override `find`/`findOne` with an explicit `populate` object
+  (per-component `on: {}` for the dynamic zone). Edit those when you add fields
+  that need populating (nested components, media).
+- `backend/src/index.ts` `bootstrap()` **seeds** the Global + home Page on first
+  run (idempotent) and **auto-grants** the Public role `find`/`findOne`. Keep
+  the seed in sync when you add/rename fields.
+
+### Frontend integration (`frontend/src/`)
+
+- **`pages/[...slug].astro`** — catch-all block renderer. Fetches the page by
+  slug (`/` → `home`) + global, then maps each block's `__component` to an Astro
+  section component via `sectionMap`.
+- **`layouts/Base.astro`** — html shell, orbs, fonts, client script, SEO `<head>`
+  (title/description/OG/robots from `page.seo` → `global.defaultSeo` → fallback),
+  and the global `Footer`.
+- **`components/sections/*.astro`** — one per section; receives `block` (and
+  `global` where needed). Each has **hardcoded fallbacks**, so the site renders
+  even if Strapi is down or a field is empty.
+- **`lib/strapi.ts`** — `getPage(slug)`, `getGlobal()`, `mediaUrl(media, fb)`,
+  `mediaAlt(media, fb)`. `STRAPI_URL` resolves `import.meta.env` → `process.env`
+  → `http://localhost:1337`.
+- **`lib/content.ts`** — `pick`, `arr`, `splitAccent` (wrap an accent word in
+  `<em>`), `splitWords` (per-word hero/heading reveal). Re-exports media helpers.
+- **`scripts/main.ts`** / **`styles/global.css`** — all client JS and CSS live
+  here (imported by the page); the `.astro` files stay markup + data only.
+
+### Adding a section type
+1. `backend/src/components/sections/<name>.json` (+ any new `home/*` sub-parts).
+2. Add it to `Page.sections` dynamic zone `components` list.
+3. Add its populate entry in `api/page/controllers/page.ts`.
+4. `frontend/src/components/sections/<Name>.astro` (props: `block`).
+5. Register `"sections.<name>": <Name>` in `sectionMap` in `[...slug].astro`.
+6. Add a default block to the seed in `backend/src/index.ts`.
+
+### Adding a page
+Create a `Page` entry in Strapi (set `slug`, add sections). No code change —
+`[...slug].astro` renders it. Use `mediaUrl`/`mediaAlt` for any images; set image
+**Alternative text** in the Media Library for alt/SEO.
+
+> Both services block indexing (`robots.txt` + `noindex`). Flip `seo.noindex`
+> to `false` (per page or on `Global.defaultSeo`) to allow indexing at launch.
 
 ## Git Conventions
 

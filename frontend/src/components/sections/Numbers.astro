@@ -1,0 +1,42 @@
+---
+import { pick, arr, splitAccent } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.heading?.eyebrow, "BY THE NUMBERS");
+const heading = splitAccent(
+  pick(block?.heading?.heading, "The scale behind the supply."),
+  pick(block?.heading?.accent, "supply")
+);
+const stats = arr(
+  block?.stats?.map((s: any) => ({ n: s.number, big: s.value, unit: s.unit, label: s.label, body: s.body })),
+  [
+    { n: "01", big: "30,000", unit: "MT", label: "TERMINAL STORAGE", body: "Hambantota terminal capacity, the largest in the region." },
+    { n: "02", big: "10,000", unit: "+", label: "DEALERS ISLAND WIDE", body: "A distribution network reaching every district." },
+    { n: "03", big: "2001", unit: "", label: "OPERATIONS BEGAN", body: "Two decades supplying homes and industry in Sri Lanka." },
+    { n: "04", big: "3", unit: "vessels", label: "GAS CARRIERS AT SEA", body: "Own fleet moving LPG across the Indian Ocean." },
+  ]
+);
+---
+
+<section id="numbers" class="numbers">
+  <div class="wrap wrap--wide">
+    <div class="section-head reveal-group">
+      <div class="eyebrow">{eyebrow}</div>
+      <h2>{heading.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+    </div>
+    <div class="numbers__grid reveal-group">
+      {stats.map((s) => (
+        <div class="numbers__cell">
+          <div class="numbers__idx">{s.n}</div>
+          <div class="numbers__big">
+            <span class="numbers__val count">{s.big}</span>
+            {s.unit && <span class="numbers__unit">{s.unit}</span>}
+          </div>
+          <div class="numbers__label">{s.label}</div>
+          <div class="numbers__body">{s.body}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

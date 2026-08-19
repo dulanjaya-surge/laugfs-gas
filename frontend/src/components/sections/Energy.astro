@@ -1,0 +1,42 @@
+---
+import { pick, splitAccent } from "../../lib/content";
+
+const { block } = Astro.props;
+
+const heading = splitAccent(
+  pick(block?.heading?.heading, "Energy that keeps a nation running."),
+  pick(block?.heading?.accent, "nation")
+);
+const body = pick(
+  block?.body,
+  "From the kitchens of ten thousand households to the industrial plants that keep production lines moving, LP Gas is the constant behind it."
+);
+---
+
+<section id="energy" class="energy">
+  <div class="wrap wrap--wide">
+    <div class="energy__inner">
+      <h2>
+        {heading.map((p) => (p.em ? <em class="em--bright">{p.t}</em> : p.t))}
+      </h2>
+      <p>{body}</p>
+      <div class="energy__stage">
+        <div class="energy__glow" id="energyGlow"></div>
+        <div class="bulb atropos">
+          <div class="atropos-scale">
+            <div class="atropos-rotate">
+              <div class="atropos-inner">
+                <div class="bulb__halo"></div>
+                <div class="bulb__core"></div>
+                <div class="bulb__img" data-atropos-offset="4">
+                  <img src="/design/light-bulb.png" alt="Light bulb" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-rule"></div>
+</section>

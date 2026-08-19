@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_sections_stories",
+  "info": {
+    "displayName": "Story",
+    "icon": "book"
+  },
+  "options": {},
+  "attributes": {
+    "heading": { "type": "string" },
+    "bodyOne": { "type": "text" },
+    "bodyTwo": { "type": "text" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "badgeValue": { "type": "string" },
+    "badgeLabel": { "type": "string" }
+  }
+}

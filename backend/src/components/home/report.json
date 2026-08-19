@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_home_reports",
+  "info": {
+    "displayName": "Report",
+    "icon": "file"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "sub": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    }
+  }
+}

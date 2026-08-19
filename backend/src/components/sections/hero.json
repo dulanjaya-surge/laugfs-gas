@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_sections_heroes",
+  "info": {
+    "displayName": "Hero",
+    "icon": "landscape",
+    "description": "Full-screen hero with headline and background media"
+  },
+  "options": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "accent": { "type": "string" },
+    "videoUrl": { "type": "string" },
+    "lede": { "type": "text" },
+    "phone": { "type": "string" },
+    "address": { "type": "string" },
+    "poster": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}
