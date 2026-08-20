@@ -3,6 +3,11 @@ import { mediaUrl, pick, arr, splitWords } from "../../lib/content";
 
 const { block } = Astro.props;
 
+const primaryLabel = pick(block?.primaryLabel, "Our products");
+const primaryHref = pick(block?.primaryHref, "/refill");
+const secondaryLabel = pick(block?.secondaryLabel, "Find an agent");
+const secondaryHref = pick(block?.secondaryHref, "/refill#agents");
+
 const capWords = splitWords(
   pick(block?.heading?.heading, "Three ways we reach every corner."),
   pick(block?.heading?.accent, "every")
@@ -54,8 +59,8 @@ const items = arr(
           <span class="cap__statlabel">{statLabel}</span>
         </div>
         <div class="cap__buttons">
-          <a href="#energy" class="btn btn--soft">Our products</a>
-          <a href="#contact" class="btn btn--gold-grad">Find a dealer</a>
+          <a href={primaryHref} class="btn btn--soft">{primaryLabel}</a>
+          <a href={secondaryHref} class="btn btn--gold-grad">{secondaryLabel}</a>
         </div>
       </div>
 

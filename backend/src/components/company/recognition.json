@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_company_recognitions",
+  "info": {
+    "displayName": "Recognition",
+    "description": "Awards and certification"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "isoTitle": {
+      "type": "string"
+    },
+    "isoClaim": {
+      "type": "text"
+    },
+    "isoBody": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.award"
+    }
+  }
+}

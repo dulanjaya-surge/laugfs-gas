@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_company_ctas",
+  "info": {
+    "displayName": "Closing links",
+    "description": "Where to go next"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.link"
+    }
+  }
+}

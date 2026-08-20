@@ -6,7 +6,19 @@
   },
   "options": {},
   "attributes": {
-    "heading": { "type": "string" },
-    "cards": { "type": "component", "repeatable": true, "component": "home.media-card" }
+    "heading": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.media-card"
+    },
+    "linkLabel": {
+      "type": "string"
+    },
+    "linkHref": {
+      "type": "string"
+    }
   }
 }

@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_company_map_routes",
+  "info": {
+    "displayName": "Map route",
+    "description": "A shipping route drawn on the map"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "note": {
+      "type": "string"
+    },
+    "d": {
+      "type": "text",
+      "required": true
+    },
+    "lx": {
+      "type": "decimal",
+      "required": true
+    },
+    "ly": {
+      "type": "decimal",
+      "required": true
+    },
+    "anchor": {
+      "type": "enumeration",
+      "enum": [
+        "start",
+        "middle",
+        "end"
+      ],
+      "default": "start"
+    }
+  }
+}

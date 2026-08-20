@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_company_subsidiarys",
+  "info": {
+    "displayName": "Subsidiary",
+    "description": "An operating company in the group"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "role": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "href": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "facts": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.fact"
+    }
+  }
+}

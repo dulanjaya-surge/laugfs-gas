@@ -6,15 +6,33 @@
   },
   "options": {},
   "attributes": {
-    "heading": { "type": "string" },
-    "bodyOne": { "type": "text" },
-    "bodyTwo": { "type": "text" },
+    "heading": {
+      "type": "string"
+    },
+    "bodyOne": {
+      "type": "text"
+    },
+    "bodyTwo": {
+      "type": "text"
+    },
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "badgeValue": { "type": "string" },
-    "badgeLabel": { "type": "string" }
+    "badgeValue": {
+      "type": "string"
+    },
+    "badgeLabel": {
+      "type": "string"
+    },
+    "linkLabel": {
+      "type": "string"
+    },
+    "linkHref": {
+      "type": "string"
+    }
   }
 }

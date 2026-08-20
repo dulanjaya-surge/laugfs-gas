@@ -3,6 +3,8 @@ import { mediaUrl, mediaAlt, pick, arr, splitAccent } from "../../lib/content";
 
 const { block } = Astro.props;
 
+const linkHref = pick(block?.linkHref, "https://www.laugfsmaritime.com");
+
 const eyebrow = pick(block?.heading?.eyebrow, "MARITIME &amp; LOGISTICS");
 const heading = splitAccent(
   pick(block?.heading?.heading, "Three ships carry the region's LP Gas."),
@@ -34,7 +36,7 @@ const vessels = arr(
       </div>
       <div>
         <p>{intro}</p>
-        <a href="#maritime" class="link-underline">{linkLabel}</a>
+        <a href={linkHref} class="link-underline" target="_blank" rel="noopener noreferrer">{linkLabel}</a>
       </div>
     </div>
 

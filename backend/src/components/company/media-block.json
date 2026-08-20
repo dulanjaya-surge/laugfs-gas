@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_company_media_blocks",
+  "info": {
+    "displayName": "Films",
+    "description": "Campaign films"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.film"
+    }
+  }
+}

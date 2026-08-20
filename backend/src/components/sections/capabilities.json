@@ -6,10 +6,36 @@
   },
   "options": {},
   "attributes": {
-    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
-    "intro": { "type": "text" },
-    "statValue": { "type": "string" },
-    "statLabel": { "type": "string" },
-    "items": { "type": "component", "repeatable": true, "component": "home.capability" }
+    "heading": {
+      "type": "component",
+      "repeatable": false,
+      "component": "home.section-heading"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "statValue": {
+      "type": "string"
+    },
+    "statLabel": {
+      "type": "string"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.capability"
+    },
+    "primaryLabel": {
+      "type": "string"
+    },
+    "primaryHref": {
+      "type": "string"
+    },
+    "secondaryLabel": {
+      "type": "string"
+    },
+    "secondaryHref": {
+      "type": "string"
+    }
   }
 }

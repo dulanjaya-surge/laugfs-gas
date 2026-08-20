@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_company_stats",
+  "info": {
+    "displayName": "Stat",
+    "description": "One headline figure"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "to": {
+      "type": "string"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "note": {
+      "type": "text"
+    }
+  }
+}

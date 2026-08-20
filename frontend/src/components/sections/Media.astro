@@ -3,6 +3,9 @@ import { pick, arr } from "../../lib/content";
 
 const { block } = Astro.props;
 
+const linkLabel = pick(block?.linkLabel, "ALL RELEASES →");
+const linkHref = pick(block?.linkHref, "/company#films");
+
 const heading = pick(block?.heading, "Media centre");
 const cards = arr(block?.cards, [
   { tag: "INVESTOR", title: "Annual Report 2024/25 published", foot: "PDF" },
@@ -15,11 +18,11 @@ const cards = arr(block?.cards, [
   <section id="media" class="media">
     <div class="media__head reveal-group">
       <h2>{heading}</h2>
-      <a href="#media" class="link-underline">ALL RELEASES →</a>
+      <a href={linkHref} class="link-underline">{linkLabel}</a>
     </div>
     <div class="media__grid reveal-group">
       {cards.map((m) => (
-        <a href="#media" class="media__card">
+        <a href={m.href || linkHref} class="media__card">
           <div class="media__tag">{m.tag}</div>
           <div class="media__title">{m.title}</div>
           <div class="media__foot">{m.foot}</div>

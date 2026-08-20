@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_company_groups",
+  "info": {
+    "displayName": "Group",
+    "description": "Subsidiaries and the supply chain"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.subsidiary"
+    },
+    "chainLabel": {
+      "type": "string"
+    },
+    "chain": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.chain-step"
+    }
+  }
+}

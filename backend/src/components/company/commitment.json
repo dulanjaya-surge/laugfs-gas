@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_company_commitments",
+  "info": {
+    "displayName": "Social commitment",
+    "description": "What the company gives back"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.commitment-item"
+    }
+  }
+}

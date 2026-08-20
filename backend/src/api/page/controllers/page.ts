@@ -18,7 +18,7 @@ const populate = {
       'sections.safety': { populate: { heading: true, tips: true } },
       'sections.maritime': { populate: { heading: true, image: true, vessels: true } },
       'sections.story': { populate: ['image'] },
-      'sections.investors': { populate: { heading: true, reports: true } },
+      'sections.investors': { populate: { heading: true, reports: { populate: ['file'] } } },
       'sections.media': { populate: { cards: true } },
     },
   },

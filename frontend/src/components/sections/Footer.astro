@@ -7,6 +7,14 @@ const { global } = Astro.props;
 const logoUrl = mediaUrl(global?.logo, "");
 const logoAlt = mediaAlt(global?.logo, "LAUGFS Gas");
 
+const social = arr(global?.socialLinks, [
+  { label: "Facebook", href: "https://www.facebook.com/LaugfsGasPLC" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/laugfs-gas-plc" },
+  { label: "Privacy", href: "/company#governance" },
+]);
+const copyright = pick(global?.copyright, "© 2026 LAUGFS Gas PLC. All rights reserved.");
+const exchangeNote = pick(global?.exchangeNote, "Colombo Stock Exchange — LGL.N0000");
+
 const address = pick(global?.footerAddress, "101, Maya Avenue, Colombo 06, Sri Lanka");
 const phone = pick(global?.footerPhone, "Tel +94 11 5 566 222");
 const fax = pick(global?.footerFax, "Fax +94 11 5 577 824");
@@ -14,34 +22,34 @@ const columns = arr(global?.footerColumns, [
   {
     title: "INVESTORS",
     links: [
-      { label: "Investor relations", href: "#investors" },
-      { label: "Financial information", href: "#investors" },
-      { label: "Annual reports", href: "#investors" },
-      { label: "Share price &amp; events", href: "#investors" },
+      { label: "Investor relations", href: "/#investors" },
+      { label: "Financial information", href: "/#investors" },
+      { label: "Annual reports", href: "/company#recognition" },
+      { label: "Share price &amp; events", href: "/#investors" },
     ],
   },
   {
     title: "COMPANY",
     links: [
-      { label: "At a glance", href: "#capabilities" },
-      { label: "Our story", href: "#story" },
-      { label: "Subsidiaries", href: "#maritime" },
-      { label: "Media releases", href: "#media" },
+      { label: "At a glance", href: "/company#numbers" },
+      { label: "Our story", href: "/company#timeline" },
+      { label: "Subsidiaries", href: "/company#companies" },
+      { label: "Media releases", href: "/company#films" },
     ],
   },
   {
     title: "BUSINESS &amp; SUPPORT",
     links: [
-      { label: "Domestic", href: "#capabilities" },
-      { label: "Industrial and bulk", href: "#capabilities" },
-      { label: "Specialty services", href: "#capabilities" },
-      { label: "Safety", href: "#safety" },
+      { label: "Refill prices", href: "/refill" },
+      { label: "Industrial and bulk", href: "/#capabilities" },
+      { label: "Specialty services", href: "/refill#agents" },
+      { label: "Safety", href: "/#safety" },
     ],
   },
 ]);
 ---
 
-<footer class="footer">
+<footer class="footer" id="contact">
   <div class="footer__grid">
     <div>
       {logoUrl ? (
@@ -63,12 +71,18 @@ const columns = arr(global?.footerColumns, [
     ))}
   </div>
   <div class="footer__bottom">
-    <span>© 2026 LAUGFS Gas PLC. All rights reserved.</span>
-    <span>Colombo Stock Exchange — LGL.N0000</span>
+    <span>{copyright}</span>
+    <span>{exchangeNote}</span>
     <div class="footer__social">
-      <a href="#media">Facebook</a>
-      <a href="#media">LinkedIn</a>
-      <a href="#media">Privacy</a>
+      {social.map((l) => (
+        <a
+          href={l.href}
+          target={l.href?.startsWith("http") ? "_blank" : undefined}
+          rel={l.href?.startsWith("http") ? "noopener noreferrer" : undefined}
+        >
+          {l.label}
+        </a>
+      ))}
     </div>
   </div>
 </footer>

@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_company_facts",
+  "info": {
+    "displayName": "Fact",
+    "description": "A short labelled fact or tag"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

@@ -6,8 +6,24 @@
   },
   "options": {},
   "attributes": {
-    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
-    "intro": { "type": "text" },
-    "reports": { "type": "component", "repeatable": true, "component": "home.report" }
+    "heading": {
+      "type": "component",
+      "repeatable": false,
+      "component": "home.section-heading"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "reports": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.report"
+    },
+    "linkLabel": {
+      "type": "string"
+    },
+    "linkHref": {
+      "type": "string"
+    }
   }
 }

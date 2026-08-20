@@ -6,14 +6,31 @@
   },
   "options": {},
   "attributes": {
-    "heading": { "type": "component", "repeatable": false, "component": "home.section-heading" },
-    "intro": { "type": "text" },
-    "linkLabel": { "type": "string" },
+    "heading": {
+      "type": "component",
+      "repeatable": false,
+      "component": "home.section-heading"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "linkLabel": {
+      "type": "string"
+    },
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "vessels": { "type": "component", "repeatable": true, "component": "home.vessel" }
+    "vessels": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.vessel"
+    },
+    "linkHref": {
+      "type": "string"
+    }
   }
 }

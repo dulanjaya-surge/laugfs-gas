@@ -14,6 +14,11 @@ const address = pick(block?.address, "101, Maya Avenue, Colombo 06");
 const poster = mediaUrl(block?.poster, "https://www.laugfsgas.lk/images/gas-1.jpg");
 const posterAlt = mediaAlt(block?.poster, "LAUGFS Gas delivery");
 
+const primaryLabel = pick(block?.primaryLabel, "Annual Report 2024/25");
+const primaryHref = pick(block?.primaryHref, "/company#recognition");
+const secondaryLabel = pick(block?.secondaryLabel, "Refill prices");
+const secondaryHref = pick(block?.secondaryHref, "/refill");
+
 // Accept a full YouTube URL or a bare 11-char ID; fall back to the default.
 const DEFAULT_VIDEO_ID = "cOwGuBiRu0A";
 function youtubeId(input?: string): string {
@@ -65,8 +70,8 @@ const videoSrc = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&m
     <div class="hero__lede">
       <p>{lede}</p>
       <div class="hero__actions">
-        <a href="#investors" class="btn btn--gold">Annual Report 2024/25</a>
-        <a href="#investors" class="btn btn--ghost">Financials</a>
+        <a href={primaryHref} class="btn btn--gold">{primaryLabel}</a>
+        <a href={secondaryHref} class="btn btn--ghost">{secondaryLabel}</a>
       </div>
     </div>
   </div>

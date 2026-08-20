@@ -167,6 +167,52 @@ blocks; the frontend renders whatever blocks a page contains.
 5. Register `"sections.<name>": <Name>` in `sectionMap` in `[...slug].astro`.
 6. Add a default block to the seed in `backend/src/index.ts`.
 
+## Company page (`/company`)
+
+The seven thin About pages on the old site — At a Glance, Our Story,
+Milestones, Achievements, Subsidiaries, Social Commitment, Policies —
+consolidated into one narrative page of twelve sections. `/about` is a 301 to
+it, so old links still land.
+
+### Strapi
+
+- **`Company page`** (`api/company`, single type) — the whole page in one
+  editable record: `intro`, `stats`, `reach`, `mission`, `valuesBlock`,
+  `timeline`, `group`, `recognition`, `commitment`, `governance`, `films`,
+  `cta`, `seo`. Components live under `components/company/`.
+- A single type rather than dynamic-zone blocks: this page is a fixed
+  narrative, not a set of interchangeable blocks that get reordered per page.
+  The page builder still owns `Page`; this is the exception, deliberately.
+- Seeded from `src/seed/company.ts`, which mirrors the frontend fallbacks.
+- The controller populates every nested list and media field by name — add
+  there when you add a field, or it arrives as `null`.
+
+### Frontend
+
+- **`pages/company.astro`** — the page. **`lib/company.ts`** merges the CMS
+  record over `data/about.ts` field by field, so an empty box in Strapi shows
+  the original copy rather than a gap, and the page still renders in full if
+  the CMS is down.
+- **`data/about.ts`** is the fallback content, not dead code. Copy we wrote
+  rather than took from the client's site is flagged `draft: true` there.
+- **`data/sri-lanka.ts`** — the map coastline, generated from open data. See
+  its header before regenerating.
+- Imagery falls back to the client's own photography on laugfsgas.lk; an
+  upload in Strapi takes over. Where no relevant photograph exists — the two
+  social-commitment entries, the award trophies — a reserved slot renders
+  instead of a wrong picture.
+
+## Links
+
+Every href on the site is editable. `Global` holds `navLinks`, `footerColumns`,
+`socialLinks`, `copyright` and `exchangeNote`; each home section component
+carries its own label/href pair (`primaryLabel`/`primaryHref` and so on), and
+each falls back to a sensible default in its `.astro` file.
+
+`src/seed/links.ts` migrates the original in-page anchors (`#story`) to the
+real destinations now that those pages exist. It only rewrites hrefs that are
+still bare anchors, so anything the client has edited is left alone.
+
 ## Refill prices & agent finder (`/refill`)
 
 A separate app area from the CMS page builder. Customers look up the refill

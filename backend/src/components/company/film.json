@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_company_films",
+  "info": {
+    "displayName": "Film",
+    "description": "A campaign film"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    },
+    "year": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "poster": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "languages": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.language"
+    }
+  }
+}

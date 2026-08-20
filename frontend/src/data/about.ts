@@ -50,6 +50,8 @@ export type Subsidiary = {
   body: string;
   facts: string[];
   href?: string;
+  image?: string;
+  imageAlt?: string;
 };
 
 export type Award = {
@@ -68,6 +70,9 @@ export type Policy = { name: string; group: string };
 export type Film = {
   title: string;
   body: string;
+  poster?: string;
+  posterAlt?: string;
+  url?: string;
   languages: { label: string; note: string }[];
   year: string;
 };
@@ -384,6 +389,8 @@ export const subsidiaries: Subsidiary[] = [
       "Provides ocean freight and logistics for LPG. With its own fleet it handles import, " +
       "export and distribution, serving growing LPG demand across South and South-East Asia.",
     facts: ["Gas Challenger", "Gas Success", "Gas Courage"],
+    image: "https://www.laugfsgas.lk/images/s3.jpg",
+    imageAlt: "The Gas Challenger under way, with a second LAUGFS carrier astern",
     href: "https://www.laugfsmaritime.com",
   },
   {
@@ -393,6 +400,8 @@ export const subsidiaries: Subsidiary[] = [
       "Owner and operator of South Asia's largest LPG transshipment terminal at Hambantota " +
       "Port. With expansion planned to 45,000 MT, it is the cornerstone of regional logistics.",
     facts: ["30,000 MT today", "45,000 MT planned", "Hambantota International Port"],
+    image: "https://www.laugfsgas.lk/images/s1.jpg",
+    imageAlt: "LAUGFS LPG storage spheres at the Hambantota terminal",
   },
   {
     name: "LAUGFS Gas Bangladesh",
@@ -401,6 +410,8 @@ export const subsidiaries: Subsidiary[] = [
       "One of the largest LPG downstream players in the Bangladesh market — importing, storing, " +
       "bottling and distributing LPG, and the reason LAUGFS became a multinational brand.",
     facts: ["Acquired 2014", "60,000 MT / yr", "Formerly Petredec Elpiji"],
+    image: "https://www.laugfsgas.lk/images/s2.jpg",
+    imageAlt: "The Gas Challenger alongside at berth, discharging cargo",
   },
 ];
 
@@ -504,6 +515,8 @@ export const policyGroups = ["Board & governance", "Conduct & ethics", "Risk & s
 export const films: Film[] = [
   {
     title: "Mulu ratatama batha idawana ape LAUGFS Gas",
+    poster: "https://www.laugfsgas.lk/images/video/1.jpg",
+    posterAlt: "Still from the national LPG awareness campaign",
     body:
       "The national LPG awareness campaign, produced in all three languages of the country.",
     year: "2010",
@@ -515,12 +528,16 @@ export const films: Film[] = [
   },
   {
     title: "LAUGFS Gas PLC campaign",
+    poster: "https://www.laugfsgas.lk/images/video/laugfsgascampaign.jpg",
+    posterAlt: "Still from the 2018 LAUGFS Gas campaign",
     body: "The 2018 continuation of the national campaign.",
     year: "2018",
     languages: [{ label: "සිංහල", note: "Sinhala" }],
   },
   {
     title: "LAUGFS Gas 5kg",
+    poster: "https://www.laugfsgas.lk/images/video/5kgmedia.jpg",
+    posterAlt: "Still from the 5kg cylinder film",
     body: "The 5kg cylinder — made for smaller kitchens and for the road.",
     year: "—",
     languages: [{ label: "සිංහල", note: "Sinhala" }],
@@ -536,6 +553,46 @@ export const close = {
     { label: "Investor centre", href: "/#investors" },
     { label: "Contact us", href: "/#contact" },
   ],
+};
+
+/**
+ * Section headings. These were hardcoded in the markup; lifted here so every
+ * word on the page is editable from the CMS like the rest.
+ */
+export const headings = {
+  values: {
+    eyebrow: "WHAT WE HOLD TO",
+    title: "Six values, and where each one showed up.",
+  },
+  timeline: {
+    eyebrow: "MILESTONES",
+    title: "From an autogas workshop to a regional energy company.",
+    hint: "Scroll to travel through it.",
+  },
+  group: {
+    eyebrow: "THE GROUP",
+    title: "The companies behind the cylinder.",
+    body:
+      "LAUGFS Gas PLC sits within LAUGFS Holdings. Three operating companies carry the " +
+      "gas from the source market to a kitchen door.",
+    chainLabel: "FROM SHIP TO DOORSTEP",
+  },
+  recognition: {
+    eyebrow: "RECOGNITION",
+    title: "Twenty-six awards, and one certificate that mattered more.",
+  },
+  governance: {
+    eyebrow: "GOVERNANCE",
+    title: "How we govern ourselves.",
+    body: "Twelve published policies. Every one downloadable, in full.",
+  },
+  films: {
+    eyebrow: "MEDIA",
+    title: "Films.",
+    body:
+      "The national LPG awareness campaign runs in all three languages of the country. " +
+      "It is one film, told three ways.",
+  },
 };
 
 /** The page's own table of contents, used by the sticky section rail. */

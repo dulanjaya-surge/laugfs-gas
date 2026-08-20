@@ -4,11 +4,11 @@ import { arr, mediaUrl, mediaAlt } from "../lib/content";
 const { global } = Astro.props;
 
 const nav = arr(global?.navLinks, [
-  { href: "#investors", label: "INVESTORS" },
-  { href: "#story", label: "COMPANY" },
-  { href: "#capabilities", label: "BUSINESS" },
-  { href: "#safety", label: "SAFETY" },
-  { href: "#media", label: "MEDIA" },
+  { href: "/#investors", label: "INVESTORS" },
+  { href: "/company", label: "COMPANY" },
+  { href: "/#capabilities", label: "BUSINESS" },
+  { href: "/#safety", label: "SAFETY" },
+  { href: "/company#films", label: "MEDIA" },
 ]);
 
 // The header carries the page background, so the primary logo belongs here.

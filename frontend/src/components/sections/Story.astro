@@ -3,6 +3,9 @@ import { mediaUrl, mediaAlt, pick } from "../../lib/content";
 
 const { block } = Astro.props;
 
+const linkLabel = pick(block?.linkLabel, "READ OUR STORY →");
+const linkHref = pick(block?.linkHref, "/company#timeline");
+
 const heading = pick(block?.heading, "From a humble start to the country's second LPG downstream player.");
 const bodyOne = pick(
   block?.bodyOne,
@@ -36,8 +39,8 @@ const badgeLabel = pick(block?.badgeLabel, "TERMINAL EXTENSION UNDERWAY");
         <p>{bodyOne}</p>
         <p>{bodyTwo}</p>
         <div class="story__links">
-          <a href="#story" class="link-underline">READ THE FULL STORY →</a>
-          <a href="#story" class="link-underline">MILESTONES →</a>
+          <a href={linkHref} class="link-underline">{linkLabel}</a>
+          <a href="/company#timeline" class="link-underline">MILESTONES →</a>
         </div>
       </div>
     </div>

@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_company_points",
+  "info": {
+    "displayName": "Point",
+    "description": "One line in a list"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

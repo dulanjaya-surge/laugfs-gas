@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_company_reachs",
+  "info": {
+    "displayName": "Reach",
+    "description": "Map section"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "hint": {
+      "type": "string"
+    },
+    "sites": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.map-site"
+    },
+    "routes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.map-route"
+    }
+  }
+}

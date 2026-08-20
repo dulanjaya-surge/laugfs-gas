@@ -3,6 +3,9 @@ import { pick, arr, splitAccent } from "../../lib/content";
 
 const { block } = Astro.props;
 
+const hotlineHref = pick(block?.hotlineHref, "tel:+94115566222");
+const leafletLabel = pick(block?.hotlineLabel, "SAFETY LEAFLET (PDF) →");
+
 const eyebrow = pick(block?.heading?.eyebrow, "SAFETY");
 const heading = splitAccent(
   pick(block?.heading?.heading, "LP Gas is safe when it is handled properly."),
@@ -49,7 +52,7 @@ const tips = arr(
           <span class="safety__hotlabel">24-HOUR SAFETY HOTLINE</span>
           <span class="safety__hotnum">{hotline}</span>
         </div>
-        <a href="#safety" class="safety__leaflet">SAFETY LEAFLET (PDF) →</a>
+        <a href={hotlineHref} class="safety__leaflet">{leafletLabel}</a>
       </div>
     </div>
   </section>

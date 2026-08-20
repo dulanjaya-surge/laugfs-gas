@@ -7,16 +7,43 @@
   },
   "options": {},
   "attributes": {
-    "title": { "type": "string", "required": true },
-    "accent": { "type": "string" },
-    "videoUrl": { "type": "string" },
-    "lede": { "type": "text" },
-    "phone": { "type": "string" },
-    "address": { "type": "string" },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "accent": {
+      "type": "string"
+    },
+    "videoUrl": {
+      "type": "string"
+    },
+    "lede": {
+      "type": "text"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
     "poster": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "primaryLabel": {
+      "type": "string"
+    },
+    "primaryHref": {
+      "type": "string"
+    },
+    "secondaryLabel": {
+      "type": "string"
+    },
+    "secondaryHref": {
+      "type": "string"
     }
   }
 }

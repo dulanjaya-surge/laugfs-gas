@@ -9,6 +9,7 @@ const populate = {
   logoOnDark: true,
   favicon: true,
   navLinks: true,
+  socialLinks: true,
   footerColumns: { populate: ['links'] },
 };
 

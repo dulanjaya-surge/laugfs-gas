@@ -88,6 +88,19 @@ export async function getShop(): Promise<any | null> {
   }
 }
 
+/** Fetch the Company page single type (every block, in one request). */
+export async function getCompany(): Promise<any | null> {
+  try {
+    const res = await fetch(`${STRAPI_URL}/api/company`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.data ?? null;
+  } catch (err) {
+    console.warn("[strapi] company fetch failed, using fallback content:", err);
+    return null;
+  }
+}
+
 /** Fetch the Global single type (nav + footer). */
 export async function getGlobal(): Promise<any | null> {
   try {

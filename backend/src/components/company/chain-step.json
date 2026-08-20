@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_company_chain_steps",
+  "info": {
+    "displayName": "Chain step",
+    "description": "One step from ship to doorstep"
+  },
+  "options": {},
+  "attributes": {
+    "step": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    }
+  }
+}

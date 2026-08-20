@@ -3,6 +3,9 @@ import { mediaUrl, mediaAlt, pick, arr, splitAccent } from "../../lib/content";
 
 const { block } = Astro.props;
 
+const ctaLabel = pick(block?.ctaLabel, "Order a refill");
+const ctaHref = pick(block?.ctaHref, "/refill");
+
 const eyebrow = pick(block?.heading?.eyebrow, "THE CYLINDER");
 const heading = splitAccent(
   pick(block?.heading?.heading, "Built for the kitchens of a nation."),
@@ -64,7 +67,7 @@ const specs = arr(block?.specs, [
           <div class="product__num"><span class="count">{specs[3]?.value}</span>{specs[3]?.unit && <span>{specs[3].unit}</span>}</div>
           <div class="product__lab">{specs[3]?.label}</div>
         </div>
-        <a href="#order" class="btn btn--gold-grad">Order a refill</a>
+        <a href={ctaHref} class="btn btn--gold-grad">{ctaLabel}</a>
       </div>
     </div>
   </section>

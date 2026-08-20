@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_company_timelines",
+  "info": {
+    "displayName": "Timeline",
+    "description": "The milestone timeline"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "hint": {
+      "type": "string"
+    },
+    "eras": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.fact"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.milestone"
+    }
+  }
+}

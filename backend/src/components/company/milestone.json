@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_company_milestones",
+  "info": {
+    "displayName": "Milestone",
+    "description": "One dated entry on the timeline"
+  },
+  "options": {},
+  "attributes": {
+    "year": {
+      "type": "string",
+      "required": true
+    },
+    "era": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    }
+  }
+}

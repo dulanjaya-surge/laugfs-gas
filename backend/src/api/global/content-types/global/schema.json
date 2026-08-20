@@ -60,6 +60,17 @@
     },
     "footerFax": {
       "type": "string"
+    },
+    "socialLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "home.nav-link"
+    },
+    "copyright": {
+      "type": "string"
+    },
+    "exchangeNote": {
+      "type": "string"
     }
   }
 }

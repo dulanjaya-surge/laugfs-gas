@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_company_intros",
+  "info": {
+    "displayName": "Company intro",
+    "description": "Opening statement"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "accent": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "standfirst": {
+      "type": "text"
+    },
+    "since": {
+      "type": "integer",
+      "default": 2001
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_company_policys",
+  "info": {
+    "displayName": "Policy",
+    "description": "A published governance policy"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "group": {
+      "type": "string",
+      "required": true
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "files",
+        "images"
+      ]
+    },
+    "href": {
+      "type": "string"
+    }
+  }
+}

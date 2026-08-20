@@ -1,0 +1,48 @@
+{
+  "collectionName": "components_company_map_sites",
+  "info": {
+    "displayName": "Map site",
+    "description": "A pin on the map, positioned in the map's drawing box"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "kind": {
+      "type": "string"
+    },
+    "figure": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "x": {
+      "type": "decimal",
+      "required": true
+    },
+    "y": {
+      "type": "decimal",
+      "required": true
+    },
+    "lx": {
+      "type": "decimal",
+      "required": true
+    },
+    "ly": {
+      "type": "decimal",
+      "required": true
+    },
+    "anchor": {
+      "type": "enumeration",
+      "enum": [
+        "start",
+        "middle",
+        "end"
+      ],
+      "default": "start"
+    }
+  }
+}

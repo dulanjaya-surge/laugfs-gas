@@ -34,6 +34,11 @@
   text-align: center;
 }
 .ab-slot--wide { aspect-ratio: 16 / 10; }
+/* Real photography sits in the same frames the reserved slots occupy, so the
+   layout does not shift when an image is uploaded. */
+.ab-cocard__img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 16px; display: block; }
+.ab-give__img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 16px; display: block; }
+.ab-film__img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; display: block; }
 .ab-slot--tall { aspect-ratio: 4 / 3; }
 .ab-slot--video { aspect-ratio: 16 / 9; }
 
@@ -571,6 +576,10 @@
   padding: 13px 0; border-bottom: 1px solid var(--hair-a);
 }
 .ab-policy:hover .ab-policy__name { color: #8a6a00; }
+/* Not yet uploaded: shown, but plainly not clickable. */
+.ab-policy--pending { cursor: default; }
+.ab-policy--pending .ab-policy__name { color: var(--muted); }
+.ab-policy--pending .ab-policy__meta { color: var(--line); }
 .ab-policy__name { font-size: 14.5px; line-height: 1.5; font-weight: 600; }
 .ab-policy__meta {
   flex: none; font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
