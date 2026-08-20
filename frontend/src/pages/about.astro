@@ -1,0 +1,442 @@
+---
+import Base from "../layouts/Base.astro";
+import "../styles/about.css";
+import { getGlobal } from "../lib/strapi";
+import { splitAccent, splitWords } from "../lib/content";
+import {
+  opening, stats, hotspots, routes, reach, mission, values, milestones, eras,
+  subsidiaries, chain, isoAward, awards, commitment, policies, policyGroups,
+  films, close, sections,
+} from "../data/about";
+
+const global = await getGlobal();
+
+const years = new Date().getFullYear() - opening.since;
+const headWords = splitWords(opening.title, "opened.");
+const reachHead = splitAccent(reach.title, reach.accent);
+const commitHead = splitAccent(commitment.title, commitment.accent);
+const closeHead = splitAccent(close.title, close.accent);
+
+const categories = ["All", ...Array.from(new Set(awards.map((a) => a.category)))];
+const countFor = (c: string) =>
+  c === "All" ? awards.length : awards.filter((a) => a.category === c).length;
+
+// The marquee needs the list twice so the loop has no seam.
+const marquee = [...awards, ...awards];
+
+const seo = {
+  metaTitle: "About LAUGFS Gas — 25 years of LP Gas in Sri Lanka",
+  metaDescription:
+    "LAUGFS Gas began in 2001 when Sri Lanka's LPG market opened. The network, the plants, " +
+    "the fleet, the milestones and the people behind the cylinder.",
+};
+---
+
+<Base title="About" global={global} seo={seo}>
+  <!-- Twelve sections is a long read; the rail is how you keep your place. -->
+  <nav class="rail" aria-label="Page sections">
+    <ol>
+      {sections.map((s) => (
+        <li>
+          <a href={`#${s.id}`} data-rail={s.id}>
+            <span class="rail__dot"></span>
+            <span class="rail__label">{s.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+  <!-- ============================ 01 OPENING ============================ -->
+  <section class="ab-open" id="open">
+    <div class="wrap">
+      <div class="ab-open__grid">
+        <div class="ab-open__figure" aria-hidden="true">
+          <span class="ab-open__since">SINCE</span>
+          <span class="ab-open__year">{opening.since}</span>
+          <span class="ab-open__rule"></span>
+          <span class="ab-open__years"><b>{years}</b> years of LP Gas</span>
+        </div>
+        <div class="ab-open__body">
+          <span class="eyebrow">{opening.eyebrow}</span>
+          <h1 class="ab-open__title">
+            {headWords.map((w, i) => (
+              <span class="ab-word" style={`--d:${(0.15 + i * 0.07).toFixed(2)}s`}>{w.t}</span>
+            ))}
+          </h1>
+          <p class="ab-open__lede">{opening.body}</p>
+          <p class="ab-open__stand">{opening.standfirst}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ 02 NUMBERS ============================ -->
+  <section class="ab-numbers" id="numbers">
+    <div class="wrap">
+      <div class="ab-numbers__grid">
+        {stats.map((s) => (
+          <div class="ab-stat">
+            <div class="ab-stat__figure">
+              <span class="ab-stat__value count">{s.value}</span>
+              {s.to && (
+                <>
+                  <span class="ab-stat__arrow" aria-label="rising to">→</span>
+                  <span class="ab-stat__value ab-stat__value--to count">{s.to}</span>
+                </>
+              )}
+              {s.unit && <span class="ab-stat__unit">{s.unit}</span>}
+            </div>
+            <span class="ab-stat__label">{s.label}</span>
+            <p class="ab-stat__note">{s.note}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= 03 REACH ============================= -->
+  <section class="ab-reach" id="reach">
+    <div class="wrap">
+      <div class="ab-reach__head">
+        <span class="eyebrow">{reach.eyebrow}</span>
+        <h2>{reachHead.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+        <p>{reach.body}</p>
+      </div>
+
+      <div class="ab-reach__grid">
+        <div class="ab-map">
+          <svg viewBox="0 0 460 660" role="img" aria-label="Map of Sri Lanka showing LAUGFS Gas sites and shipping routes">
+            <defs>
+              <linearGradient id="islandFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--map-island-a)" />
+                <stop offset="100%" stop-color="var(--map-island-b)" />
+              </linearGradient>
+            </defs>
+
+            <!-- Shipping routes, drawn outward from Hambantota -->
+            <g class="ab-map__routes">
+              {routes.map((r) => (
+                <path class="ab-map__route" data-route={r.id} d={r.d} fill="none" />
+              ))}
+            </g>
+
+            <!-- A deliberately faceted island: this is a diagram, not a survey -->
+            <polygon
+              class="ab-map__island"
+              points="116.2,12.2 151.9,53.6 214.4,94.9 259.1,153.1 294.9,203.6 325.2,260.3 375.3,333.8 402.1,413.4 400.3,468.5 366.3,520.5 307.4,563.4 271.6,578.7 205.5,597.1 175.1,609.3 110.8,592.5 76.8,551.2 62.5,505.2 44.7,454.7 41.1,398.1 35.7,329.2 39.3,275.6 32.2,239.8 32.2,176.1 57.2,137.8 80.4,91.9 75.1,45.9 89.3,15.3"
+              fill="url(#islandFill)"
+            />
+
+            {hotspots.map((h) => (
+              <g class="ab-map__spot" data-spot={h.id} transform={`translate(${h.x} ${h.y})`}>
+                <circle class="ab-map__pulse" r="16" />
+                <circle class="ab-map__pin" r="6.5" />
+              </g>
+            ))}
+          </svg>
+
+          <div class="ab-map__legend">
+            {routes.map((r) => (
+              <span class="ab-map__legenditem"><b>{r.label}</b>{r.note}</span>
+            ))}
+          </div>
+        </div>
+
+        <div class="ab-reach__panel">
+          <span class="ab-reach__hint" data-reach-hint>{reach.hint}</span>
+          <div class="ab-spots">
+            {hotspots.map((h, i) => (
+              <button
+                type="button"
+                class="ab-spotcard"
+                data-spotcard={h.id}
+                aria-pressed={i === 0 ? "true" : "false"}
+              >
+                <span class="ab-spotcard__kind">{h.kind}</span>
+                <span class="ab-spotcard__name">{h.name}</span>
+                {h.figure && <span class="ab-spotcard__figure">{h.figure}</span>}
+                <span class="ab-spotcard__body">{h.body}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ 04 MISSION ============================ -->
+  <section class="ab-mission" id="mission">
+    <div class="wrap">
+      <div class="ab-mission__grid">
+        <div>
+          <span class="eyebrow eyebrow--dim">{mission.eyebrow}</span>
+          <p class="ab-mission__lead">{mission.lead}</p>
+          <ul class="ab-mission__points">
+            {mission.points.map((p) => <li>{p}</li>)}
+          </ul>
+        </div>
+        <aside class="ab-mission__aside">
+          <h2>{mission.philosophyTitle}</h2>
+          <p>{mission.philosophy}</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= 05 VALUES ============================ -->
+  <section class="ab-values" id="values" data-values>
+    <div class="wrap">
+      <div class="ab-values__head">
+        <span class="eyebrow">WHAT WE HOLD TO</span>
+        <h2>Six values, and where each one showed up.</h2>
+      </div>
+
+      <div class="ab-values__grid">
+        <ol class="ab-values__index">
+          {values.map((v, i) => (
+            <li class:list={["ab-vindex", { "is-active": i === 0 }]} data-index={String(i)}>
+              <span>{String(i + 1).padStart(2, "0")}</span>{v.name}
+            </li>
+          ))}
+        </ol>
+
+        <div class="ab-values__stage" data-values-stage>
+          {values.map((v, i) => (
+            <article class:list={["ab-value", { "is-active": i === 0 }]} data-value={String(i)}>
+              <span class="ab-value__n">{String(i + 1).padStart(2, "0")} / {String(values.length).padStart(2, "0")}</span>
+              <h3>{v.name}</h3>
+              <p class="ab-value__body">{v.body}</p>
+              <p class="ab-value__proof">{v.proof}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ 06 TIMELINE =========================== -->
+  <section class="ab-time" id="timeline" data-time>
+    <div class="wrap">
+      <div class="ab-time__intro">
+        <span class="eyebrow">MILESTONES</span>
+        <h2>From an autogas workshop to a regional energy company.</h2>
+        <p>Scroll to travel through it.</p>
+      </div>
+    </div>
+
+    <div class="ab-time__viewport">
+      <div class="ab-time__eras" aria-hidden="true">
+        {eras.map((e) => <span class="ab-time__era" data-era={e}>{e}</span>)}
+      </div>
+
+      <ol class="ab-time__rail" data-time-rail>
+        {milestones.map((m) => (
+          <li class="ab-mile" data-era={m.era}>
+            <span class="ab-mile__year">{m.year}</span>
+            <span class="ab-mile__tick" aria-hidden="true"></span>
+            <h3>{m.title}</h3>
+            <p>{m.body}</p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="ab-time__progress" aria-hidden="true">
+        <span data-time-bar></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== 07 COMPANIES =========================== -->
+  <section class="ab-co" id="companies">
+    <div class="wrap">
+      <div class="ab-co__head">
+        <span class="eyebrow">THE GROUP</span>
+        <h2>The companies behind the cylinder.</h2>
+        <p>
+          LAUGFS Gas PLC sits within LAUGFS Holdings. Three operating companies carry the
+          gas from the source market to a kitchen door.
+        </p>
+      </div>
+
+      <div class="ab-co__grid">
+        {subsidiaries.map((s) => (
+          <article class="ab-cocard">
+            <div class="ab-slot ab-slot--wide">
+              <span>IMAGE · {s.name}</span>
+            </div>
+            <span class="ab-cocard__role">{s.role}</span>
+            <h3>{s.name}</h3>
+            <p>{s.body}</p>
+            <ul class="ab-cocard__facts">
+              {s.facts.map((f) => <li>{f}</li>)}
+            </ul>
+            {s.href && (
+              <a class="link-underline" href={s.href} target="_blank" rel="noopener noreferrer">
+                VISIT SITE →
+              </a>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <div class="ab-chain">
+        <span class="ab-chain__label">FROM SHIP TO DOORSTEP</span>
+        <ol class="ab-chain__row">
+          {chain.map((c, i) => (
+            <li class="ab-chain__step" style={`--i:${i}`}>
+              <span class="ab-chain__n">{String(i + 1).padStart(2, "0")}</span>
+              <span class="ab-chain__name">{c.step}</span>
+              <span class="ab-chain__body">{c.body}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================== 08 RECOGNITION ========================== -->
+  <section class="ab-rec" id="recognition">
+    <div class="wrap">
+      <div class="ab-rec__head">
+        <div>
+          <span class="eyebrow">RECOGNITION</span>
+          <h2>Twenty-six awards, and one certificate that mattered more.</h2>
+        </div>
+      </div>
+
+      <div class="ab-iso">
+        <div class="ab-iso__mark" aria-hidden="true">
+          <span>ISO</span><b>9001</b><span>:2015</span>
+        </div>
+        <div>
+          <h3>{isoAward.claim}</h3>
+          <p>{isoAward.body}</p>
+        </div>
+      </div>
+
+      <div class="ab-rec__filters" role="group" aria-label="Filter awards by category">
+        {categories.map((c, i) => (
+          <button type="button" class="ab-chip" data-cat={c} aria-pressed={i === 0 ? "true" : "false"}>
+            {c}<span>{countFor(c)}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="ab-marquee" data-marquee>
+        <div class="ab-marquee__track" data-marquee-track>
+          {marquee.map((a, i) => (
+            <article class="ab-award" data-cat={a.category} data-dupe={i >= awards.length ? "1" : "0"}>
+              <span class="ab-award__year">{a.year}</span>
+              <span class="ab-award__name">{a.name}</span>
+              <span class="ab-award__result">{a.result}</span>
+            </article>
+          ))}
+        </div>
+      </div>
+      <p class="ab-rec__note" data-marquee-note>Hover to pause · select a category to filter</p>
+    </div>
+  </section>
+
+  <!-- ========================== 09 COMMITMENT =========================== -->
+  <section class="ab-commit" id="commitment">
+    <div class="wrap">
+      <div class="ab-commit__head">
+        <span class="eyebrow">{commitment.eyebrow}</span>
+        <h2>{commitHead.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+        <p>{commitment.intro}</p>
+      </div>
+
+      {commitment.items.map((item, i) => (
+        <article class:list={["ab-give", { "ab-give--flip": i % 2 === 1 }]}>
+          <div class="ab-slot ab-slot--tall">
+            <span>IMAGE · {item.caption}</span>
+          </div>
+          <div class="ab-give__body">
+            <h3>{item.name}</h3>
+            <p>{item.body}</p>
+            <span class="ab-give__cap">{item.caption}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ========================== 10 GOVERNANCE =========================== -->
+  <section class="ab-gov" id="governance">
+    <div class="wrap">
+      <div class="ab-gov__head">
+        <span class="eyebrow">GOVERNANCE</span>
+        <h2>How we govern ourselves.</h2>
+        <p>Twelve published policies. Every one downloadable, in full.</p>
+      </div>
+
+      <div class="ab-gov__groups">
+        {policyGroups.map((g) => (
+          <div class="ab-gov__group">
+            <h3>{g}</h3>
+            <ul>
+              {policies.filter((p) => p.group === g).map((p) => (
+                <li>
+                  <a href="#" class="ab-policy">
+                    <span class="ab-policy__name">{p.name}</span>
+                    <span class="ab-policy__meta">PDF · V.1</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= 11 FILMS ============================= -->
+  <section class="ab-films" id="films">
+    <div class="wrap">
+      <div class="ab-films__head">
+        <span class="eyebrow">MEDIA</span>
+        <h2>Films.</h2>
+        <p>
+          The national LPG awareness campaign runs in all three languages of the country.
+          It is one film, told three ways.
+        </p>
+      </div>
+
+      <div class="ab-films__grid">
+        {films.map((f) => (
+          <article class="ab-film">
+            <div class="ab-slot ab-slot--video">
+              <span>VIDEO · {f.year}</span>
+            </div>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+            <div class="ab-film__langs">
+              {f.languages.map((l, i) => (
+                <button type="button" class="ab-lang" aria-pressed={i === 0 ? "true" : "false"}>
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== 12 NEXT ============================= -->
+  <section class="ab-next" id="next">
+    <div class="wrap">
+      <h2>{closeHead.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+      <div class="ab-next__links">
+        {close.links.map((l) => (
+          <a href={l.href} class:list={["btn", l.primary ? "btn--gold" : "btn--soft"]}>{l.label}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import "../scripts/about.ts";
+  </script>
+</Base>

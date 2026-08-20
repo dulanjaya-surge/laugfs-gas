@@ -11,6 +11,7 @@
   --card-muted: #6b6459;
   --card-border: rgba(23, 21, 15, 0.06);
   --header-h: 81px; /* hero subtracts this so header + hero fill one screen */
+  --hair-a: rgba(23, 21, 15, 0.05); /* faintest rule, for dense lists */
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -838,6 +839,7 @@ html.theme-dark .brand__img--dark { display: block; }
    which is too heavy for mobile. CSS transitions fade the swap. */
 @media (max-width: 860px) {
   html.theme-dark {
+    --hair-a: rgba(251, 247, 242, 0.06);
     --bg: #14120d;
     --ink: #fbf7f2;
     --muted: #beb6aa;
