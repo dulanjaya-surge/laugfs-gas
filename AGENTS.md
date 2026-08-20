@@ -167,6 +167,40 @@ blocks; the frontend renders whatever blocks a page contains.
 5. Register `"sections.<name>": <Name>` in `sectionMap` in `[...slug].astro`.
 6. Add a default block to the seed in `backend/src/index.ts`.
 
+## Refill ordering (guest e-commerce)
+
+A separate app area from the CMS page builder. Guests order cylinder refills;
+no accounts exist — an order is tracked by the reference emailed to the buyer.
+
+### Strapi
+
+- **`Product`** (`api/product`) — one per cylinder size, with its own image,
+  copy and `sortOrder`.
+- **`District`** (`api/district`) — a delivery district holding its own
+  `prices` rows (`shop.district-price`: a Product relation + the price), plus
+  an optional `deliveryFee` that overrides the island-wide default.
+- **`Shop settings`** (`api/shop`, single type) — `deliveryFee`, `currency`,
+  `maxQtyPerItem` and the order/checkout notices.
+- Seeded from `src/seed/shop.ts` (the client's published district price list,
+  25 districts x 4 sizes). After the first run the CMS owns the prices; a
+  revision is made in Strapi, never in the seed.
+
+### Frontend
+
+- **`pages/refill.astro`** — the product page. Fetches products, districts and
+  shop settings, then embeds a compact `#shop-data` JSON island
+  (`district -> product -> price`) so selecting a size or district needs no
+  further requests.
+- **`scripts/cart.ts`** — the guest cart in `localStorage`, plus the remembered
+  district and the shared money formatter.
+- **`scripts/refill.ts`** — the product page behaviour (size/district
+  selection, price lookup, add to cart).
+- **`styles/shop.css`** — styles for the shop pages only; `global.css` still
+  carries the shared shell, buttons and theme variables.
+- Prices shown in the browser are a convenience. The server re-prices every
+  line from Strapi before an order is created, so a tampered cart cannot
+  change what is charged.
+
 ### Adding a page
 Create a `Page` entry in Strapi (set `slug`, add sections). No code change —
 `[...slug].astro` renders it. Use `mediaUrl`/`mediaAlt` for any images; set image

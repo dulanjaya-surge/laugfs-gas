@@ -49,6 +49,45 @@ export async function getPage(slug: string): Promise<any | null> {
   }
 }
 
+/** Fetch the cylinder sizes, ordered by the CMS sort order. */
+export async function getProducts(): Promise<any[]> {
+  try {
+    const res = await fetch(`${STRAPI_URL}/api/products?pagination[pageSize]=50`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    return Array.isArray(json?.data) ? json.data : [];
+  } catch (err) {
+    console.warn("[strapi] products fetch failed:", err);
+    return [];
+  }
+}
+
+/** Fetch delivery districts with their price rows (25 today, so one page). */
+export async function getDistricts(): Promise<any[]> {
+  try {
+    const res = await fetch(`${STRAPI_URL}/api/districts?pagination[pageSize]=100`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    return Array.isArray(json?.data) ? json.data : [];
+  } catch (err) {
+    console.warn("[strapi] districts fetch failed:", err);
+    return [];
+  }
+}
+
+/** Fetch the Shop settings single type (delivery fee, currency, notices). */
+export async function getShop(): Promise<any | null> {
+  try {
+    const res = await fetch(`${STRAPI_URL}/api/shop`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.data ?? null;
+  } catch (err) {
+    console.warn("[strapi] shop settings fetch failed:", err);
+    return null;
+  }
+}
+
 /** Fetch the Global single type (nav + footer). */
 export async function getGlobal(): Promise<any | null> {
   try {
