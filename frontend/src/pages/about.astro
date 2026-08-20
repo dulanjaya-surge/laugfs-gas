@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import "../styles/about.css";
 import { getGlobal } from "../lib/strapi";
 import { splitAccent, splitWords } from "../lib/content";
+import { mainland, islands } from "../data/sri-lanka";
 import {
   opening, stats, hotspots, routes, reach, mission, values, milestones, eras,
   subsidiaries, chain, isoAward, awards, commitment, policies, policyGroups,
@@ -107,7 +108,7 @@ const seo = {
       <div class="ab-reach__grid">
         <div class="ab-map">
           <svg
-            viewBox="-70 -50 640 760"
+            viewBox="-110 -40 730 780"
             role="img"
             aria-label="Map of Sri Lanka showing LAUGFS Gas sites and the shipping routes leaving Hambantota"
           >
@@ -133,14 +134,13 @@ const seo = {
               ))}
             </g>
 
-            <!-- A deliberately faceted island: this is a diagram, not a survey -->
-            <polygon
-              class="ab-map__island"
-              points="116.2,12.2 151.9,53.6 214.4,94.9 259.1,153.1 294.8,203.6 325.2,260.3 375.3,333.8 402.1,413.4 400.3,468.5 366.4,520.5 307.4,563.4 271.6,578.7 205.5,597.1 175.1,609.3 110.8,592.5 76.8,551.2 62.5,505.2 44.7,454.7 41.1,398.1 35.7,329.2 39.3,275.6 32.2,239.8 32.2,176.1 57.2,137.8 80.4,91.9 75.1,45.9 89.4,15.3"
-              fill="url(#islandFill)"
-            />
+            <!-- Real coastline, from open geoBoundaries data -->
+            <path class="ab-map__island" d={mainland} fill="url(#islandFill)" />
+            {islands.map((d) => (
+              <path class="ab-map__island ab-map__islet" d={d} fill="url(#islandFill)" />
+            ))}
 
-            <circle class="ab-map__origin" cx="271.6" cy="578.7" r="13" />
+            <circle class="ab-map__origin" cx="308.1" cy="591.3" r="13" />
 
             <!-- Destination labels sit where each route leaves the frame -->
             {routes.map((r) => (
