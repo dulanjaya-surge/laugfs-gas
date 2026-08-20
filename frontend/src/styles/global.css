@@ -321,11 +321,13 @@ html.theme-dark .brand__img--dark { display: block; }
 .nav__links a { color: var(--muted); }
 .nav__links a:hover { color: var(--gold); }
 .nav__cta { margin-left: auto; display: flex; align-items: center; gap: 20px; }
-.nav__order {
+/* The quiet secondary CTA; ordering a refill is the primary action and
+   takes the pill. */
+.nav__alt {
   font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
   color: var(--muted);
 }
-.nav__order:hover { color: var(--gold); }
+.nav__alt:hover { color: var(--gold); }
 
 .hero__title { position: relative; z-index: 3; padding: 56px 48px 0; }
 .hero__title h1 {
@@ -735,7 +737,7 @@ html.theme-dark .brand__img--dark { display: block; }
 @media (max-width: 860px) {
   :root { --header-h: 103px; } /* nav__links wrap to a second row */
   .nav { flex-wrap: wrap; gap: 14px 16px; padding: 14px 24px; }
-  .nav__order { display: none; }
+  .nav__alt { display: none; } /* the refill pill keeps priority on mobile */
   .nav__links {
     order: 3; width: 100%; margin-left: 0;
     justify-content: center; flex-wrap: wrap; gap: 12px 20px;

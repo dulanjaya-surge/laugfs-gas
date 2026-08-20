@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shop_district_prices",
+  "info": {
+    "displayName": "District price",
+    "description": "Refill price for one cylinder size in this district"
+  },
+  "options": {},
+  "attributes": {
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product"
+    },
+    "price": { "type": "decimal", "required": true }
+  }
+}

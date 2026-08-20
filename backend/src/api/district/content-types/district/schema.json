@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "districts",
+  "info": {
+    "singularName": "district",
+    "pluralName": "districts",
+    "displayName": "District",
+    "description": "A delivery district, its refill prices and optional delivery fee"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "slug": { "type": "uid", "targetField": "name", "required": true },
+    "deliveryFee": { "type": "decimal" },
+    "prices": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shop.district-price"
+    },
+    "sortOrder": { "type": "integer", "default": 0 },
+    "active": { "type": "boolean", "default": true }
+  }
+}
