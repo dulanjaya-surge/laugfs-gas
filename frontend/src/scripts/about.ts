@@ -54,7 +54,16 @@ const canPin = window.matchMedia("(min-width: 861px)").matches && !reduceMotion;
     cards.forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.spotcard === id)));
   };
 
-  spots.forEach((s) => s.addEventListener("click", () => select(s.dataset.spot!)));
+  spots.forEach((s) => {
+    s.addEventListener("click", () => select(s.dataset.spot!));
+    // The pins are focusable, so they must answer the keyboard too.
+    s.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        select(s.dataset.spot!);
+      }
+    });
+  });
   cards.forEach((c) => c.addEventListener("click", () => select(c.dataset.spotcard!)));
   if (spots.length) select(spots[0].dataset.spot!);
 
@@ -63,24 +72,30 @@ const canPin = window.matchMedia("(min-width: 861px)").matches && !reduceMotion;
   if (map && routes.length) {
     const draw = () => {
       routes.forEach((path, i) => {
-        const len = path.getTotalLength();
         if (reduceMotion) {
           path.classList.add("is-drawn");
           return;
         }
+        const len = path.getTotalLength();
         path.style.strokeDasharray = `${len}`;
         path.style.strokeDashoffset = `${len}`;
-        path.style.transition = `stroke-dashoffset 1.5s ease ${0.2 + i * 0.28}s`;
-        requestAnimationFrame(() => {
-          path.style.strokeDashoffset = "0";
-        });
-        // Hand back to the CSS dash animation once the draw finishes.
-        window.setTimeout(() => {
-          path.style.transition = "";
-          path.style.strokeDasharray = "";
-          path.style.strokeDashoffset = "";
-          path.classList.add("is-drawn");
-        }, 1500 + (0.2 + i * 0.28) * 1000 + 60);
+        path.style.transition = `stroke-dashoffset 1.6s ease ${(0.15 + i * 0.25).toFixed(2)}s`;
+        // transitionend rather than a matching timer, so the handover to the
+        // CSS flow animation can never disagree about when the draw finished.
+        path.addEventListener(
+          "transitionend",
+          () => {
+            path.style.transition = "";
+            path.style.strokeDasharray = "";
+            path.style.strokeDashoffset = "";
+            path.classList.add("is-drawn");
+          },
+          { once: true },
+        );
+        // Force a style flush so the browser sees the starting offset before
+        // the target is applied — more reliable here than waiting on rAF.
+        void path.getBoundingClientRect();
+        path.style.strokeDashoffset = "0";
       });
     };
 

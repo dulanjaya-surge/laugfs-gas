@@ -25,6 +25,10 @@ export type Hotspot = {
   kind: string;
   x: number;
   y: number;
+  /** Where the on-map label sits, kept clear of the shipping routes. */
+  lx: number;
+  ly: number;
+  anchor: "start" | "middle" | "end";
   body: string;
   figure?: string;
   draft?: boolean;
@@ -48,7 +52,16 @@ export type Subsidiary = {
   href?: string;
 };
 
-export type Award = { year: string; name: string; result: string; category: string };
+export type Award = {
+  year: string;
+  name: string;
+  result: string;
+  category: string;
+  /** Trophy photograph. Empty until the client uploads one; the card falls
+   *  back to a reserved slot rather than a broken image. */
+  image?: string;
+  imageAlt?: string;
+};
 
 export type Policy = { name: string; group: string };
 
@@ -98,6 +111,9 @@ export const hotspots: Hotspot[] = [
     kind: "Head office",
     x: 48.2,
     y: 454.7,
+    lx: 34,
+    ly: 459,
+    anchor: "end",
     body: "101 Maya Avenue, Colombo 06 — the company's registered head office since incorporation.",
     figure: "Listed on the CSE since 2010",
   },
@@ -107,6 +123,9 @@ export const hotspots: Hotspot[] = [
     kind: "Storage & bottling",
     x: 76.8,
     y: 440.9,
+    lx: 92,
+    ly: 430,
+    anchor: "start",
     body:
       "The main storage and bottling plant, with a fully automated cylinder filling line. " +
       "Capacity is being expanded.",
@@ -118,6 +137,9 @@ export const hotspots: Hotspot[] = [
     kind: "Transshipment terminal",
     x: 271.6,
     y: 578.7,
+    lx: 271,
+    ly: 614,
+    anchor: "middle",
     body:
       "Operated by LAUGFS Terminals Ltd inside Hambantota International Port. The largest " +
       "LPG transshipment terminal in South Asia, with expansion under way.",
@@ -129,6 +151,9 @@ export const hotspots: Hotspot[] = [
     kind: "Distribution reach",
     x: 287.7,
     y: 203.6,
+    lx: 304,
+    ly: 208,
+    anchor: "start",
     body:
       "The dealer network reaches every district — over 10,000 dealers supplied through " +
       "26 regional distributors.",
@@ -137,10 +162,40 @@ export const hotspots: Hotspot[] = [
   },
 ];
 
+/**
+ * Shipping routes. Bearings from Hambantota are real — Chattogram 31°,
+ * Chennai 353°, Singapore 101° — but the paths sail around the island rather
+ * than across it, because that is what a ship does. `lx/ly` place the label
+ * where each route leaves the frame.
+ */
 export const routes = [
-  { id: "bangladesh", label: "Bangladesh", note: "60,000 MT / yr", d: "M 271.6 578.7 C 356 420 418 232 368 34" },
-  { id: "india", label: "India", note: "Indian Ocean Rim", d: "M 271.6 578.7 C 196 502 86 378 20 296" },
-  { id: "sea", label: "South-East Asia", note: "Ocean freight", d: "M 271.6 578.7 C 372 574 416 480 404 384" },
+  {
+    id: "india",
+    label: "India",
+    note: "Indian Ocean Rim",
+    d: "M 271.6 578.7 C 210 632 120 648 40 620 C -18 598 -44 500 -48 372",
+    lx: -60,
+    ly: 330,
+    anchor: "start" as const,
+  },
+  {
+    id: "bangladesh",
+    label: "Bangladesh",
+    note: "60,000 MT / yr",
+    d: "M 271.6 578.7 C 350 618 440 592 466 520 C 490 438 486 250 478 96",
+    lx: 556,
+    ly: 60,
+    anchor: "end" as const,
+  },
+  {
+    id: "sea",
+    label: "South-East Asia",
+    note: "Ocean freight",
+    d: "M 271.6 578.7 C 360 626 470 646 566 632",
+    lx: 556,
+    ly: 682,
+    anchor: "end" as const,
+  },
 ];
 
 export const reach = {

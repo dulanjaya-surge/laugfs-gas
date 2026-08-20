@@ -106,41 +106,62 @@ const seo = {
 
       <div class="ab-reach__grid">
         <div class="ab-map">
-          <svg viewBox="0 0 460 660" role="img" aria-label="Map of Sri Lanka showing LAUGFS Gas sites and shipping routes">
+          <svg
+            viewBox="-70 -50 640 760"
+            role="img"
+            aria-label="Map of Sri Lanka showing LAUGFS Gas sites and the shipping routes leaving Hambantota"
+          >
             <defs>
               <linearGradient id="islandFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="var(--map-island-a)" />
                 <stop offset="100%" stop-color="var(--map-island-b)" />
               </linearGradient>
+              <!-- Arrowheads give each route a direction of travel -->
+              <marker
+                id="routeArrow" viewBox="0 0 10 10" refX="7" refY="5"
+                markerWidth="5" markerHeight="5" orient="auto-start-reverse"
+              >
+                <path d="M 0 1 L 9 5 L 0 9 z" class="ab-map__arrow" />
+              </marker>
             </defs>
 
-            <!-- Shipping routes, drawn outward from Hambantota -->
+            <!-- Routes leave Hambantota on their true bearings and sail around
+                 the island rather than over it. -->
             <g class="ab-map__routes">
               {routes.map((r) => (
-                <path class="ab-map__route" data-route={r.id} d={r.d} fill="none" />
+                <path class="ab-map__route" data-route={r.id} d={r.d} fill="none" marker-end="url(#routeArrow)" />
               ))}
             </g>
 
             <!-- A deliberately faceted island: this is a diagram, not a survey -->
             <polygon
               class="ab-map__island"
-              points="116.2,12.2 151.9,53.6 214.4,94.9 259.1,153.1 294.9,203.6 325.2,260.3 375.3,333.8 402.1,413.4 400.3,468.5 366.3,520.5 307.4,563.4 271.6,578.7 205.5,597.1 175.1,609.3 110.8,592.5 76.8,551.2 62.5,505.2 44.7,454.7 41.1,398.1 35.7,329.2 39.3,275.6 32.2,239.8 32.2,176.1 57.2,137.8 80.4,91.9 75.1,45.9 89.3,15.3"
+              points="116.2,12.2 151.9,53.6 214.4,94.9 259.1,153.1 294.8,203.6 325.2,260.3 375.3,333.8 402.1,413.4 400.3,468.5 366.4,520.5 307.4,563.4 271.6,578.7 205.5,597.1 175.1,609.3 110.8,592.5 76.8,551.2 62.5,505.2 44.7,454.7 41.1,398.1 35.7,329.2 39.3,275.6 32.2,239.8 32.2,176.1 57.2,137.8 80.4,91.9 75.1,45.9 89.4,15.3"
               fill="url(#islandFill)"
             />
 
+            <circle class="ab-map__origin" cx="271.6" cy="578.7" r="13" />
+
+            <!-- Destination labels sit where each route leaves the frame -->
+            {routes.map((r) => (
+              <text class="ab-map__dest" x={r.lx} y={r.ly} text-anchor={r.anchor}>
+                {r.label}
+                <tspan class="ab-map__destnote" x={r.lx} dy="16">{r.note}</tspan>
+              </text>
+            ))}
+
             {hotspots.map((h) => (
-              <g class="ab-map__spot" data-spot={h.id} transform={`translate(${h.x} ${h.y})`}>
-                <circle class="ab-map__pulse" r="16" />
-                <circle class="ab-map__pin" r="6.5" />
+              <g class="ab-map__spot" data-spot={h.id} tabindex="0" role="button" aria-label={h.name}>
+                <g transform={`translate(${h.x} ${h.y})`}>
+                  <circle class="ab-map__pulse" r="16" />
+                  <circle class="ab-map__pin" r="6.5" />
+                  <!-- Generous invisible hit area; the pin itself is too small to tap -->
+                  <circle class="ab-map__hit" r="22" />
+                </g>
+                <text class="ab-map__site" x={h.lx} y={h.ly} text-anchor={h.anchor}>{h.name}</text>
               </g>
             ))}
           </svg>
-
-          <div class="ab-map__legend">
-            {routes.map((r) => (
-              <span class="ab-map__legenditem"><b>{r.label}</b>{r.note}</span>
-            ))}
-          </div>
         </div>
 
         <div class="ab-reach__panel">
@@ -327,6 +348,17 @@ const seo = {
         <div class="ab-marquee__track" data-marquee-track>
           {marquee.map((a, i) => (
             <article class="ab-award" data-cat={a.category} data-dupe={i >= awards.length ? "1" : "0"}>
+              {a.image ? (
+                <img
+                  class="ab-award__img"
+                  src={a.image}
+                  alt={a.imageAlt ?? `${a.name}, ${a.year}`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div class="ab-slot ab-award__slot" aria-hidden="true"><span>TROPHY</span></div>
+              )}
               <span class="ab-award__year">{a.year}</span>
               <span class="ab-award__name">{a.name}</span>
               <span class="ab-award__result">{a.result}</span>
