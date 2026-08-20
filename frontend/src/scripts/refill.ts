@@ -1,111 +1,274 @@
-// Refill page: pick a size, pick a district, see the price for that pair,
-// then add it to the cart. Everything is driven off the JSON data island so
-// the page needs no further requests.
-import { addToCart, cartCount, getDistrict, setDistrict, shopData, money } from "./cart";
+// Refill page: choose a cylinder size and a location, see the district price
+// and the authorised agents to call. Prices and towns come from the embedded
+// data island; only the agent list is fetched, since a dealer network can be
+// far larger than is sensible to ship to the browser.
 
-const data = shopData();
-const root = document.querySelector<HTMLElement>(".refill");
+type Product = {
+  slug: string; name: string; weightLabel: string; tagline: string;
+  useCase: string; description: string;
+};
+type Agent = {
+  name: string; addressLine: string; phone: string; phoneAlt: string;
+  hours: string; mapUrl: string; deliversHome: boolean; cityName: string;
+};
 
-if (data && root) {
-  const products: any[] = data.products ?? [];
+const DISTRICT_KEY = "laugfs.district.v1";
+const CITY_KEY = "laugfs.city.v1";
+
+function readIsland(): any {
+  const el = document.getElementById("refill-data");
+  if (!el?.textContent) return null;
+  try {
+    return JSON.parse(el.textContent);
+  } catch {
+    return null;
+  }
+}
+
+function money(value: number, currency = "LKR"): string {
+  const n = Number.isFinite(value) ? value : 0;
+  const s = n.toLocaleString("en-LK", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return currency === "LKR" ? `Rs ${s}` : `${currency} ${s}`;
+}
+
+const store = {
+  get(key: string): string {
+    try { return localStorage.getItem(key) || ""; } catch { return ""; }
+  },
+  set(key: string, value: string): void {
+    try { value ? localStorage.setItem(key, value) : localStorage.removeItem(key); } catch { /* private mode */ }
+  },
+};
+
+const data = readIsland();
+
+if (data) {
+  const products: Product[] = data.products ?? [];
   const currency: string = data.currency ?? "LKR";
-  const maxQty: number = data.maxQtyPerItem ?? 5;
 
-  const sizeButtons = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-size]"));
-  const images = Array.from(root.querySelectorAll<HTMLElement>("[data-img]"));
-  const districtSel = root.querySelector<HTMLSelectElement>("#district");
-  const priceEl = root.querySelector<HTMLElement>("[data-price]");
-  const deliveryEl = root.querySelector<HTMLElement>("[data-delivery]");
-  const totalEl = root.querySelector<HTMLElement>("[data-line-total]");
-  const badgeEl = root.querySelector<HTMLElement>("[data-weight-badge]");
-  const useEl = root.querySelector<HTMLElement>("[data-use]");
-  // These two live in the detail section below, outside .refill.
-  const descEl = document.querySelector<HTMLElement>("[data-desc]");
+  const districtSel = document.querySelector<HTMLSelectElement>("#district");
+  const citySel = document.querySelector<HTMLSelectElement>("#city");
+  const statusEl = document.querySelector<HTMLElement>("[data-locator-status]");
+  const sizeCards = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-size]"));
+  const images = Array.from(document.querySelectorAll<HTMLElement>("[data-img]"));
+  const badgeEl = document.querySelector<HTMLElement>("[data-weight-badge]");
   const nameEl = document.querySelector<HTMLElement>("[data-name]");
-  const qtyEl = root.querySelector<HTMLElement>("[data-qty]");
-  const addBtn = root.querySelector<HTMLButtonElement>("[data-add]");
-  const noPrice = root.querySelector<HTMLElement>("[data-no-price]");
+  const useEl = document.querySelector<HTMLElement>("[data-use]");
+  const descEl = document.querySelector<HTMLElement>("[data-desc]");
+  const priceEl = document.querySelector<HTMLElement>("[data-price]");
+  const priceForEl = document.querySelector<HTMLElement>("[data-price-for]");
+  const agentsList = document.querySelector<HTMLElement>("[data-agents-list]");
+  const agentsState = document.querySelector<HTMLElement>("[data-agents-state]");
+  const agentsCount = document.querySelector<HTMLElement>("[data-agents-count]");
+  const agentsTitle = document.querySelector<HTMLElement>("[data-agents-title]");
 
   let size = products[0]?.slug ?? "";
-  let qty = 1;
+  let requestToken = 0; // guards against a slow response overwriting a newer one
 
-  const product = () => products.find((p) => p.slug === size);
-  const unitPrice = (): number | null => {
-    const d = districtSel?.value;
-    if (!d || !size) return null;
-    const row = data.prices?.[d]?.[size];
-    return Number.isFinite(row) ? Number(row) : null;
-  };
-  const deliveryFee = (): number => {
-    const d = data.districts?.find((x: any) => x.slug === districtSel?.value);
-    return Number(d?.deliveryFee ?? data.deliveryFee ?? 0);
+  const districtName = () =>
+    data.districts?.find((d: any) => d.slug === districtSel?.value)?.name ?? "";
+  const cityName = () =>
+    (data.cities?.[districtSel?.value ?? ""] ?? []).find((c: any) => c.slug === citySel?.value)?.name ?? "";
+  const priceFor = (productSlug: string): number | null => {
+    const p = data.prices?.[districtSel?.value ?? ""]?.[productSlug];
+    return Number.isFinite(p) ? Number(p) : null;
   };
 
-  function render() {
-    const p = product();
+  // ---- Cylinder size ------------------------------------------------------
+  function renderSize() {
+    const p = products.find((x) => x.slug === size);
     images.forEach((img) => {
       const on = img.dataset.img === size;
       img.classList.toggle("is-active", on);
       img.setAttribute("aria-hidden", on ? "false" : "true");
     });
-    sizeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.size === size)));
+    sizeCards.forEach((c) => c.setAttribute("aria-checked", String(c.dataset.size === size)));
 
     if (badgeEl) badgeEl.textContent = p?.weightLabel ?? "";
     if (nameEl) nameEl.textContent = p?.name ?? "";
     if (useEl) useEl.textContent = p?.useCase ?? "";
     if (descEl) descEl.textContent = p?.description ?? "";
-    if (qtyEl) qtyEl.textContent = String(qty);
 
-    const unit = unitPrice();
-    const hasPrice = unit !== null;
-    if (priceEl) priceEl.textContent = hasPrice ? money(unit as number, currency) : "—";
-    if (deliveryEl) deliveryEl.textContent = money(deliveryFee(), currency);
-    if (totalEl)
-      totalEl.textContent = hasPrice
-        ? money((unit as number) * qty + deliveryFee(), currency)
-        : "—";
-    if (noPrice) noPrice.hidden = hasPrice || !districtSel?.value;
-    if (addBtn) addBtn.disabled = !hasPrice;
+    const price = priceFor(size);
+    if (priceEl) priceEl.textContent = price === null ? "—" : money(price, currency);
+    if (priceForEl) {
+      priceForEl.textContent = price === null
+        ? "select a district"
+        : `refill price in ${districtName()}`;
+    }
   }
 
-  sizeButtons.forEach((b) =>
-    b.addEventListener("click", () => {
-      size = b.dataset.size ?? size;
-      render();
+  // ---- Prices on every card, so a district shows the whole range at once --
+  function renderCardPrices() {
+    for (const card of sizeCards) {
+      const slug = card.dataset.size ?? "";
+      const el = card.querySelector<HTMLElement>(`[data-card-price="${slug}"]`);
+      if (!el) continue;
+      const price = priceFor(slug);
+      el.textContent = price === null ? "Select a district" : money(price, currency);
+      el.classList.toggle("is-priced", price !== null);
+    }
+  }
+
+  // ---- Towns for the chosen district -------------------------------------
+  function renderCities(preferred = "") {
+    if (!citySel) return;
+    const list = data.cities?.[districtSel?.value ?? ""] ?? [];
+    citySel.innerHTML = "";
+    const all = document.createElement("option");
+    all.value = "";
+    all.textContent = list.length ? "All towns" : "All towns";
+    citySel.appendChild(all);
+    for (const c of list) {
+      const o = document.createElement("option");
+      o.value = c.slug;
+      o.textContent = c.name;
+      citySel.appendChild(o);
+    }
+    citySel.disabled = !districtSel?.value || list.length === 0;
+    if (preferred && list.some((c: any) => c.slug === preferred)) citySel.value = preferred;
+  }
+
+  // ---- Agents -------------------------------------------------------------
+  function agentCard(a: Agent): string {
+    const tel = a.phone.replace(/\s/g, "");
+    const alt = a.phoneAlt ? `<a href="tel:${a.phoneAlt.replace(/\s/g, "")}">${a.phoneAlt}</a>` : "";
+    return `
+      <li class="agent">
+        <div class="agent__main">
+          <h3 class="agent__name">${a.name}</h3>
+          <p class="agent__addr">${a.addressLine}</p>
+          <div class="agent__meta">
+            ${a.cityName ? `<span class="agent__tag">${a.cityName}</span>` : ""}
+            ${a.deliversHome ? `<span class="agent__tag agent__tag--ok">Home delivery</span>` : ""}
+            ${a.hours ? `<span class="agent__hours">${a.hours}</span>` : ""}
+          </div>
+        </div>
+        <div class="agent__actions">
+          <a class="btn btn--gold agent__call" href="tel:${tel}">Call ${a.phone}</a>
+          ${alt ? `<span class="agent__alt">or ${alt}</span>` : ""}
+          ${a.mapUrl ? `<a class="link-underline" href="${a.mapUrl}" target="_blank" rel="noopener noreferrer">DIRECTIONS →</a>` : ""}
+        </div>
+      </li>`;
+  }
+
+  async function loadAgents() {
+    if (!agentsList || !agentsState) return;
+    const district = districtSel?.value ?? "";
+    if (!district) {
+      agentsList.innerHTML = "";
+      agentsState.hidden = false;
+      agentsState.textContent = "Select your district above to see the authorised agents nearest you.";
+      if (agentsCount) agentsCount.hidden = true;
+      return;
+    }
+
+    const token = ++requestToken;
+    agentsState.hidden = false;
+    agentsState.textContent = "Finding authorised agents…";
+    agentsList.innerHTML = "";
+    if (agentsCount) agentsCount.hidden = true;
+
+    const qs = new URLSearchParams({ district });
+    if (citySel?.value) qs.set("city", citySel.value);
+
+    try {
+      const res = await fetch(`/api/agents?${qs}`);
+      const json = await res.json();
+      if (token !== requestToken) return; // a newer selection superseded this one
+      if (!res.ok) throw new Error(json?.error || "Could not load agents.");
+
+      const agents: Agent[] = json.data ?? [];
+      const where = cityName() || districtName();
+
+      if (agentsTitle) agentsTitle.textContent = `Authorised agents in ${where}`;
+
+      if (agents.length === 0) {
+        agentsState.hidden = false;
+        agentsState.innerHTML = citySel?.value
+          ? `No agent is listed for ${cityName()} yet. Try “All towns” in ${districtName()}, or call our hotline below.`
+          : `No agent is listed for ${districtName()} yet. Please call our hotline below and we will direct you.`;
+        return;
+      }
+
+      agentsState.hidden = true;
+      agentsList.innerHTML = agents.map(agentCard).join("");
+      if (agentsCount) {
+        agentsCount.hidden = false;
+        agentsCount.textContent = `${agents.length} ${agents.length === 1 ? "agent" : "agents"}`;
+      }
+    } catch (err: any) {
+      if (token !== requestToken) return;
+      agentsState.hidden = false;
+      agentsState.textContent =
+        "We could not load agents just now. Please call our hotline below.";
+    }
+  }
+
+  function renderStatus() {
+    if (!statusEl) return;
+    if (!districtSel?.value) {
+      statusEl.textContent = "Choose your district to see refill prices.";
+      return;
+    }
+    const where = cityName() ? `${cityName()}, ${districtName()}` : districtName();
+    statusEl.textContent = `Showing refill prices and agents for ${where}.`;
+  }
+
+  /** Keep the URL in step so a chosen price/location can be shared. */
+  function syncUrl() {
+    const url = new URL(window.location.href);
+    const set = (k: string, v: string) => (v ? url.searchParams.set(k, v) : url.searchParams.delete(k));
+    set("district", districtSel?.value ?? "");
+    set("city", citySel?.value ?? "");
+    set("size", size);
+    window.history.replaceState({}, "", url);
+  }
+
+  // ---- Wiring -------------------------------------------------------------
+  sizeCards.forEach((card) =>
+    card.addEventListener("click", () => {
+      size = card.dataset.size ?? size;
+      renderSize();
+      syncUrl();
     }),
   );
 
   districtSel?.addEventListener("change", () => {
-    setDistrict(districtSel.value);
-    render();
+    store.set(DISTRICT_KEY, districtSel.value);
+    store.set(CITY_KEY, "");
+    renderCities();
+    renderCardPrices();
+    renderSize();
+    renderStatus();
+    syncUrl();
+    void loadAgents();
   });
 
-  root.querySelector("[data-qty-down]")?.addEventListener("click", () => {
-    qty = Math.max(1, qty - 1);
-    render();
-  });
-  root.querySelector("[data-qty-up]")?.addEventListener("click", () => {
-    qty = Math.min(maxQty, qty + 1);
-    render();
+  citySel?.addEventListener("change", () => {
+    store.set(CITY_KEY, citySel.value);
+    renderStatus();
+    syncUrl();
+    void loadAgents();
   });
 
-  addBtn?.addEventListener("click", () => {
-    if (unitPrice() === null) return;
-    addToCart(size, qty, maxQty);
-    const flash = root.querySelector<HTMLElement>("[data-added]");
-    if (flash) {
-      flash.textContent = `${qty} × ${product()?.weightLabel} added — ${cartCount()} in your cart`;
-      flash.classList.add("is-on");
-      window.setTimeout(() => flash.classList.remove("is-on"), 3200);
-    }
-    qty = 1;
-    render();
-  });
+  // ---- Initial state: URL wins, then whatever was chosen last -------------
+  const params = new URLSearchParams(window.location.search);
+  const startDistrict = params.get("district") || store.get(DISTRICT_KEY);
+  const startCity = params.get("city") || store.get(CITY_KEY);
+  const startSize = params.get("size");
 
-  // Restore the district chosen earlier in the session.
-  const saved = getDistrict();
-  if (saved && districtSel && Array.from(districtSel.options).some((o) => o.value === saved)) {
-    districtSel.value = saved;
+  if (startSize && products.some((p) => p.slug === startSize)) size = startSize;
+  if (
+    startDistrict &&
+    districtSel &&
+    Array.from(districtSel.options).some((o) => o.value === startDistrict)
+  ) {
+    districtSel.value = startDistrict;
   }
-  render();
+  renderCities(startCity);
+  renderCardPrices();
+  renderSize();
+  renderStatus();
+  if (districtSel?.value) void loadAgents();
 }

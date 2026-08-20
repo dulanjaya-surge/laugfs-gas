@@ -6,7 +6,10 @@
  */
 import { factories } from '@strapi/strapi';
 
-const populate = { prices: { populate: { product: true } } };
+const populate = {
+  prices: { populate: { product: true } },
+  cities: { fields: ['name', 'slug', 'sortOrder', 'active'], sort: ['sortOrder:asc', 'name:asc'] },
+};
 
 export default factories.createCoreController('api::district.district', ({ strapi }) => ({
   async find(ctx) {

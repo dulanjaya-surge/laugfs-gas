@@ -4,17 +4,19 @@
   "info": {
     "singularName": "shop",
     "pluralName": "shops",
-    "displayName": "Shop settings",
-    "description": "Commerce settings: delivery, currency and order copy"
+    "displayName": "Refill page settings",
+    "description": "Copy and contact details for the refill prices and agent finder page"
   },
   "options": { "draftAndPublish": true },
   "pluginOptions": {},
   "attributes": {
     "currency": { "type": "string", "default": "LKR" },
-    "deliveryFee": { "type": "decimal", "default": 350, "required": true },
-    "maxQtyPerItem": { "type": "integer", "default": 5 },
-    "orderNotice": { "type": "text" },
-    "checkoutNotice": { "type": "text" },
+    "pageTitle": { "type": "string" },
+    "pageAccent": { "type": "string" },
+    "pageIntro": { "type": "text" },
+    "priceNote": { "type": "text" },
+    "agentNote": { "type": "text" },
+    "hotlineLabel": { "type": "string" },
     "supportPhone": { "type": "string" },
     "supportEmail": { "type": "string" }
   }

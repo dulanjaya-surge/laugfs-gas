@@ -1,5 +1,5 @@
 import type { Core } from '@strapi/strapi';
-import { seedShop, SHOP_PUBLIC_ACTIONS } from './seed/shop';
+import { seedShop, seedSampleAgents, SHOP_PUBLIC_ACTIONS } from './seed/shop';
 
 const PAGE_UID = 'api::page.page';
 const GLOBAL_UID = 'api::global.global';
@@ -221,6 +221,7 @@ export default {
 
     try {
       await seedShop(strapi);
+      await seedSampleAgents(strapi);
     } catch (err) {
       strapi.log.error('[seed] Failed to seed shop content:');
       strapi.log.error(err);

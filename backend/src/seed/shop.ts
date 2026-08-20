@@ -10,6 +10,8 @@ import type { Core } from '@strapi/strapi';
 const PRODUCT_UID = 'api::product.product';
 const DISTRICT_UID = 'api::district.district';
 const SHOP_UID = 'api::shop.shop';
+const CITY_UID = 'api::city.city';
+const AGENT_UID = 'api::agent.agent';
 
 // Cylinder sizes. `key` ties a product to its column in the price table below.
 const products = [
@@ -98,15 +100,22 @@ const slugify = (s: string) =>
 
 const shopSeed = {
   currency: 'LKR',
-  deliveryFee: 350,
-  maxQtyPerItem: 5,
-  orderNotice:
-    'Refills are exchanged for your empty cylinder. Please have the empty cylinder ready when the delivery arrives.',
-  checkoutNotice:
-    'You will receive an order reference by email. Use it to track your delivery — no account needed.',
+  pageTitle: 'Find your refill price and your nearest agent.',
+  pageAccent: 'refill price',
+  pageIntro:
+    'Refill prices are set district by district. Choose your cylinder size and where you are, and we will show the price and the authorised agents nearest you.',
+  priceNote:
+    'Refills are exchanged for your empty cylinder. Prices are the published district refill prices and may be revised.',
+  agentNote:
+    'Call an authorised agent directly to arrange your refill. They confirm availability and delivery for your area.',
+  hotlineLabel: 'Not sure who to call?',
   supportPhone: '+94 11 5 566 222',
   supportEmail: 'info@laugfsgas.lk',
 };
+
+// One city per district to begin with, so the finder works out of the box.
+// The client adds the towns they actually cover in Strapi.
+const seedCities = priceTable.map(([district]) => district);
 
 export async function seedShop(strapi: Core.Strapi) {
   // ---- Products -----------------------------------------------------------
@@ -144,16 +153,92 @@ export async function seedShop(strapi: Core.Strapi) {
   }
   strapi.log.info(`[seed] Districts ensured (${priceTable.length}).`);
 
+  // ---- Cities (one per district to start; the client adds their towns) ----
+  for (const [i, name] of seedCities.entries()) {
+    const slug = slugify(name);
+    const existing = await strapi.documents(CITY_UID).findFirst({ filters: { slug } });
+    if (existing) continue;
+    const district = await strapi
+      .documents(DISTRICT_UID)
+      .findFirst({ filters: { slug: slugify(name) } });
+    const doc = await strapi.documents(CITY_UID).create({
+      data: { name, slug, district: district?.documentId, sortOrder: i + 1, active: true } as any,
+    });
+    await strapi.documents(CITY_UID).publish({ documentId: doc.documentId });
+  }
+  strapi.log.info(`[seed] Cities ensured (${seedCities.length}).`);
+
   // ---- Shop settings ------------------------------------------------------
-  const shop = await strapi.documents(SHOP_UID).findFirst();
+  const shop: any = await strapi.documents(SHOP_UID).findFirst();
   if (!shop) {
     const created = await strapi.documents(SHOP_UID).create({ data: shopSeed as any });
     await strapi.documents(SHOP_UID).publish({ documentId: created.documentId });
-    strapi.log.info('[seed] Shop settings created.');
+    strapi.log.info('[seed] Refill page settings created.');
+  } else {
+    // Fill only fields that are still empty, so a field added to the schema
+    // later arrives with sensible copy instead of a blank box in the admin —
+    // and anything the client has already written is left alone.
+    const patch = Object.fromEntries(
+      Object.entries(shopSeed).filter(([k, v]) => {
+        const current = shop[k];
+        return (current === null || current === undefined || current === '') && v !== '';
+      }),
+    );
+    if (Object.keys(patch).length) {
+      await strapi.documents(SHOP_UID).update({ documentId: shop.documentId, data: patch as any });
+      await strapi.documents(SHOP_UID).publish({ documentId: shop.documentId });
+      strapi.log.info(`[seed] Refill page settings backfilled: ${Object.keys(patch).join(', ')}`);
+    }
   }
 }
 
+/**
+ * Sample agents, off by default.
+ *
+ * Real dealer names, addresses and phone numbers are the client's data — this
+ * seed must not invent business records that could be mistaken for genuine.
+ * Set SEED_SAMPLE_AGENTS=true in .env to load obviously-labelled placeholders
+ * for working on the page, then delete them in Strapi.
+ */
+export async function seedSampleAgents(strapi: Core.Strapi) {
+  if (process.env.SEED_SAMPLE_AGENTS !== 'true') return;
+
+  const samples = [
+    { district: 'Colombo', name: 'SAMPLE — Borella Gas Centre', addressLine: 'Sample address, Borella, Colombo 08', hours: '8.00am – 7.00pm, daily' },
+    { district: 'Colombo', name: 'SAMPLE — Wellawatte Gas Depot', addressLine: 'Sample address, Wellawatte, Colombo 06', hours: '8.30am – 6.30pm, Mon–Sat' },
+    { district: 'Gampaha', name: 'SAMPLE — Negombo Road Dealers', addressLine: 'Sample address, Gampaha', hours: '8.00am – 6.00pm, daily' },
+    { district: 'Kandy', name: 'SAMPLE — Peradeniya Road Agencies', addressLine: 'Sample address, Kandy', hours: '8.00am – 6.00pm, Mon–Sat' },
+  ];
+
+  for (const [i, a] of samples.entries()) {
+    const exists = await strapi.documents(AGENT_UID).findFirst({ filters: { name: a.name } });
+    if (exists) continue;
+    const slug = slugify(a.district);
+    const district = await strapi.documents(DISTRICT_UID).findFirst({ filters: { slug } });
+    const city = await strapi.documents(CITY_UID).findFirst({ filters: { slug } });
+    const doc = await strapi.documents(AGENT_UID).create({
+      data: {
+        name: a.name,
+        addressLine: a.addressLine,
+        phone: '+94 11 5 566 222', // the public hotline, not an invented number
+        hours: a.hours,
+        district: district?.documentId,
+        city: city?.documentId,
+        deliversHome: true,
+        sortOrder: i + 1,
+        active: true,
+      } as any,
+    });
+    await strapi.documents(AGENT_UID).publish({ documentId: doc.documentId });
+  }
+  strapi.log.warn('[seed] SAMPLE agents loaded (SEED_SAMPLE_AGENTS=true). Delete them before launch.');
+}
+
 export const SHOP_PUBLIC_ACTIONS = [
+  `${CITY_UID}.find`,
+  `${CITY_UID}.findOne`,
+  `${AGENT_UID}.find`,
+  `${AGENT_UID}.findOne`,
   `${PRODUCT_UID}.find`,
   `${PRODUCT_UID}.findOne`,
   `${DISTRICT_UID}.find`,

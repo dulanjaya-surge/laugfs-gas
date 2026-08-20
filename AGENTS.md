@@ -167,39 +167,52 @@ blocks; the frontend renders whatever blocks a page contains.
 5. Register `"sections.<name>": <Name>` in `sectionMap` in `[...slug].astro`.
 6. Add a default block to the seed in `backend/src/index.ts`.
 
-## Refill ordering (guest e-commerce)
+## Refill prices & agent finder (`/refill`)
 
-A separate app area from the CMS page builder. Guests order cylinder refills;
-no accounts exist — an order is tracked by the reference emailed to the buyer.
+A separate app area from the CMS page builder. Customers look up the refill
+price for their cylinder size in their district, then call an authorised
+agent near them. There is no cart, checkout or online payment — refills are
+arranged directly with the agent, which is how the market actually works.
 
 ### Strapi
 
 - **`Product`** (`api/product`) — one per cylinder size, with its own image,
   copy and `sortOrder`.
 - **`District`** (`api/district`) — a delivery district holding its own
-  `prices` rows (`shop.district-price`: a Product relation + the price), plus
-  an optional `deliveryFee` that overrides the island-wide default.
-- **`Shop settings`** (`api/shop`, single type) — `deliveryFee`, `currency`,
-  `maxQtyPerItem` and the order/checkout notices.
-- Seeded from `src/seed/shop.ts` (the client's published district price list,
-  25 districts x 4 sizes). After the first run the CMS owns the prices; a
-  revision is made in Strapi, never in the seed.
+  `prices` rows (`shop.district-price`: a Product relation + the price), and
+  the inverse relations to its cities and agents.
+- **`City / Town`** (`api/city`) — a town inside a district; narrows the agent
+  search.
+- **`Authorised agent`** (`api/agent`) — name, address, phone(s), hours, map
+  link, home-delivery flag, related to a district and a city.
+- **`Refill page settings`** (`api/shop`, single type) — the page heading,
+  intro, price/agent notes and the hotline number.
+- Seeded from `src/seed/shop.ts`: the client's published district price list
+  (25 districts x 4 sizes) and one city per district to start. After the first
+  run the CMS owns the data; price revisions are made in Strapi, never here.
+  Empty settings fields are backfilled on boot so a newly added field arrives
+  with sensible copy rather than a blank box.
+- Sample agents are **off by default**. Real dealer records are the client's
+  data, so the seed never invents them; set `SEED_SAMPLE_AGENTS=true` locally
+  to load obviously-labelled placeholders while working on the page.
 
 ### Frontend
 
-- **`pages/refill.astro`** — the product page. Fetches products, districts and
-  shop settings, then embeds a compact `#shop-data` JSON island
-  (`district -> product -> price`) so selecting a size or district needs no
-  further requests.
-- **`scripts/cart.ts`** — the guest cart in `localStorage`, plus the remembered
-  district and the shared money formatter.
-- **`scripts/refill.ts`** — the product page behaviour (size/district
-  selection, price lookup, add to cart).
-- **`styles/shop.css`** — styles for the shop pages only; `global.css` still
-  carries the shared shell, buttons and theme variables.
-- Prices shown in the browser are a convenience. The server re-prices every
-  line from Strapi before an order is created, so a tampered cart cannot
-  change what is charged.
+- **`pages/refill.astro`** — the page. Embeds a `#refill-data` island with the
+  sizes, districts, towns and a compact `district -> product -> price` lookup,
+  so changing size or district re-prices with no request.
+- **`pages/api/agents.ts`** — the one thing not embedded: agents are filtered
+  by district/city server-side, since a dealer network can be far larger than
+  is sensible to ship to the browser. Keeps Strapi's URL off the client and
+  avoids CORS.
+- **`scripts/refill.ts`** — size/district/town selection, price lookup, agent
+  loading. The district and town are remembered in `localStorage` and mirrored
+  into the URL, so a chosen price is shareable and survives a reload.
+- **`styles/shop.css`** — styles for this page only; `global.css` still carries
+  the shared shell, buttons and theme variables.
+- Where a content section falls back to hardcoded copy, this page does not: an
+  unreachable CMS means no prices, so it says so and offers the hotline rather
+  than showing a price it cannot stand behind.
 
 ### Adding a page
 Create a `Page` entry in Strapi (set `slug`, add sections). No code change —

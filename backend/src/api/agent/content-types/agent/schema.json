@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "agents",
+  "info": {
+    "singularName": "agent",
+    "pluralName": "agents",
+    "displayName": "Authorised agent",
+    "description": "An authorised LAUGFS Gas dealer customers can call for a refill"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "addressLine": { "type": "text", "required": true },
+    "phone": { "type": "string", "required": true },
+    "phoneAlt": { "type": "string" },
+    "email": { "type": "email" },
+    "hours": { "type": "string" },
+    "mapUrl": { "type": "string" },
+    "district": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::district.district",
+      "inversedBy": "agents"
+    },
+    "city": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::city.city",
+      "inversedBy": "agents"
+    },
+    "deliversHome": { "type": "boolean", "default": true },
+    "sortOrder": { "type": "integer", "default": 0 },
+    "active": { "type": "boolean", "default": true }
+  }
+}

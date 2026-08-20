@@ -1,191 +1,145 @@
 ---
 import Base from "../layouts/Base.astro";
 import "../styles/shop.css";
-import {
-  getGlobal,
-  getProducts,
-  getDistricts,
-  getShop,
-  mediaUrl,
-  mediaAlt,
-} from "../lib/strapi";
-import type { ShopData } from "../lib/shop";
+import { getGlobal } from "../lib/strapi";
+import { getRefillData, money } from "../lib/shop";
+import { splitAccent } from "../lib/content";
 
-const [global, productsRaw, districtsRaw, shop] = await Promise.all([
-  getGlobal(),
-  getProducts(),
-  getDistricts(),
-  getShop(),
-]);
+const [global, data] = await Promise.all([getGlobal(), getRefillData()]);
+const { products, districts } = data;
 
-const FALLBACK_IMG = "/design/gas.png";
+const heading = splitAccent(data.pageTitle, data.pageAccent);
 
-const products = productsRaw
-  .filter((p: any) => p.active !== false)
-  .map((p: any) => ({
-    slug: p.slug,
-    name: p.name,
-    weightLabel: p.weightLabel,
-    weightKg: Number(p.weightKg),
-    tagline: p.tagline ?? "",
-    useCase: p.useCase ?? "",
-    description: p.description ?? "",
-    image: mediaUrl(p.image, FALLBACK_IMG),
-    imageAlt: mediaAlt(p.image, `${p.name} LP Gas cylinder`),
-  }));
-
-const deliveryDefault = Number(shop?.deliveryFee ?? 350);
-
-const districts = districtsRaw
-  .filter((d: any) => d.active !== false)
-  .map((d: any) => ({
-    slug: d.slug,
-    name: d.name,
-    deliveryFee: d.deliveryFee == null ? deliveryDefault : Number(d.deliveryFee),
-  }));
-
-// district slug -> product slug -> price, the lookup the client script uses.
-const prices = Object.fromEntries(
-  districtsRaw.map((d: any) => [
-    d.slug,
-    Object.fromEntries(
-      (d.prices ?? [])
-        .filter((r: any) => r?.product?.slug)
-        .map((r: any) => [r.product.slug, Number(r.price)]),
-    ),
-  ]),
-);
-
-const data: ShopData = {
-  currency: shop?.currency ?? "LKR",
-  deliveryFee: deliveryDefault,
-  maxQtyPerItem: Number(shop?.maxQtyPerItem ?? 5),
-  products,
-  districts,
-  prices,
-};
-
-const orderNotice =
-  shop?.orderNotice ??
-  "Refills are exchanged for your empty cylinder. Please have the empty cylinder ready when the delivery arrives.";
-
-// Commerce degrades differently from content: rather than show a page with
-// no prices, say plainly that ordering is unavailable.
+// Prices are the whole point of this page, so if the CMS is unreachable we say
+// so plainly rather than render a price we cannot stand behind.
 const ready = products.length > 0 && districts.length > 0;
 
 const seo = {
-  metaTitle: "Order a gas refill — LAUGFS Gas",
+  metaTitle: "Refill prices and authorised agents — LAUGFS Gas",
   metaDescription:
-    "Order an LP Gas cylinder refill for delivery anywhere in Sri Lanka. District-wise refill prices, no account needed.",
+    "District-wise LP Gas refill prices for every cylinder size, and the authorised LAUGFS Gas agents nearest you.",
 };
 ---
 
-<Base title="Order a gas refill" global={global} seo={seo}>
+<Base title="Refill prices & agents" global={global} seo={seo}>
   {ready ? (
     <>
       <section class="refill">
         <div class="wrap">
-          <div class="refill__grid">
-            <div class="refill__stage">
-              <div class="refill__glow"></div>
+          <div class="refill__intro">
+            <span class="eyebrow">REFILL PRICES &amp; AUTHORISED AGENTS</span>
+            <h1 class="refill__title">
+              {heading.map((p) => (p.em ? <em>{p.t}</em> : p.t))}
+            </h1>
+            <p class="refill__lede">{data.pageIntro}</p>
+          </div>
+
+          <div class="locator" data-locator>
+            <div class="locator__field">
+              <label for="district">Your district</label>
+              <div class="locator__select">
+                <select id="district">
+                  <option value="">Select district…</option>
+                  {districts.map((d) => <option value={d.slug}>{d.name}</option>)}
+                </select>
+              </div>
+            </div>
+            <div class="locator__field">
+              <label for="city">Your town</label>
+              <div class="locator__select">
+                <select id="city" disabled>
+                  <option value="">All towns</option>
+                </select>
+              </div>
+            </div>
+            <p class="locator__status" data-locator-status role="status" aria-live="polite">
+              Choose your district to see refill prices.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sizes">
+        <div class="wrap">
+          <div class="sizes__grid">
+            <div class="sizes__stage">
+              <div class="sizes__glow"></div>
               {products.map((p, i) => (
                 <img
-                  class:list={["refill__img", { "is-active": i === 0 }]}
+                  class:list={["sizes__img", { "is-active": i === 0 }]}
                   data-img={p.slug}
                   src={p.image}
                   alt={p.imageAlt}
                   aria-hidden={i === 0 ? "false" : "true"}
                 />
               ))}
-              <div class="refill__badge"><span data-weight-badge>{products[0]?.weightLabel}</span></div>
+              <span class="sizes__badge" data-weight-badge>{products[0]?.weightLabel}</span>
             </div>
 
-            <div class="refill__panel">
-              <p class="eyebrow">ORDER A REFILL</p>
-              <h1 class="refill__title">
-                Your cylinder, <em>refilled</em> and delivered.
-              </h1>
-              <p class="refill__lede">
-                Choose a size and your district — refill prices are set district by
-                district. No account needed; you order as a guest and track the
-                delivery with the reference we email you.
-              </p>
+            <div class="sizes__panel">
+              <span class="sizes__label">Choose your cylinder</span>
+              <div class="sizes__cards" role="radiogroup" aria-label="Cylinder size">
+                {products.map((p, i) => (
+                  <button
+                    type="button"
+                    class="sizecard"
+                    role="radio"
+                    data-size={p.slug}
+                    aria-checked={i === 0 ? "true" : "false"}
+                  >
+                    <span class="sizecard__w">{p.weightLabel}</span>
+                    <span class="sizecard__t">{p.tagline}</span>
+                    <span class="sizecard__p" data-card-price={p.slug}>Select a district</span>
+                  </button>
+                ))}
+              </div>
 
-              <div class="refill__block">
-                <span class="refill__label">Cylinder size</span>
-                <div class="refill__sizes">
-                  {products.map((p, i) => (
-                    <button
-                      type="button"
-                      class="size"
-                      data-size={p.slug}
-                      aria-pressed={i === 0 ? "true" : "false"}
-                    >
-                      <span class="size__w">{p.weightLabel}</span>
-                      <span class="size__t">{p.tagline}</span>
-                    </button>
-                  ))}
+              <div class="sizes__detail">
+                <div class="sizes__detailhead">
+                  <h2 data-name>{products[0]?.name}</h2>
+                  <div class="sizes__price">
+                    <span class="sizes__amount" data-price>—</span>
+                    <span class="sizes__per" data-price-for>refill price</span>
+                  </div>
                 </div>
+                <p class="sizes__use" data-use>{products[0]?.useCase}</p>
+                <p class="sizes__desc" data-desc>{products[0]?.description}</p>
+                {data.priceNote && <p class="sizes__note">{data.priceNote}</p>}
               </div>
-
-              <div class="refill__block">
-                <label class="refill__label" for="district">Delivery district</label>
-                <select id="district" class="refill__select">
-                  <option value="">Select your district…</option>
-                  {districts.map((d) => <option value={d.slug}>{d.name}</option>)}
-                </select>
-                <p class="refill__hint" data-no-price hidden>
-                  Choose a district to see the refill price.
-                </p>
-              </div>
-
-              <div class="refill__pricecard">
-                <div class="refill__pricerow">
-                  <span class="refill__amount" data-price>—</span>
-                  <span class="refill__per">per refill</span>
-                </div>
-                <p class="refill__use" data-use></p>
-                <dl class="refill__sums">
-                  <div><dt>Delivery</dt><dd data-delivery>—</dd></div>
-                  <div><dt>Total with delivery</dt><dd data-line-total>—</dd></div>
-                </dl>
-              </div>
-
-              <div class="refill__actions">
-                <div class="qty" role="group" aria-label="Quantity">
-                  <button type="button" class="qty__btn" data-qty-down aria-label="Decrease quantity">−</button>
-                  <span class="qty__n" data-qty aria-live="polite">1</span>
-                  <button type="button" class="qty__btn" data-qty-up aria-label="Increase quantity">+</button>
-                </div>
-                <button type="button" class="btn btn--gold refill__add" data-add>Add to cart</button>
-                <a href="/cart" class="btn btn--soft">View cart</a>
-              </div>
-
-              <p class="refill__flash" data-added role="status" aria-live="polite"></p>
-              <p class="refill__note">{orderNotice}</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="refill__detail">
+      <section class="agents" id="agents">
         <div class="wrap">
-          <div class="refill__detailgrid">
+          <div class="agents__head">
             <div>
-              <span class="eyebrow">ABOUT THIS SIZE</span>
-              <h2 data-name>{products[0]?.name}</h2>
-              <p data-desc>{products[0]?.description}</p>
+              <span class="eyebrow">WHERE TO REFILL</span>
+              <h2 data-agents-title>Authorised agents near you</h2>
+              {data.agentNote && <p class="agents__note">{data.agentNote}</p>}
             </div>
-            <ul class="refill__facts">
-              <li><strong>Exchange only</strong><span>Your empty cylinder is collected on delivery.</span></li>
-              <li><strong>Sealed and tested</strong><span>Every cylinder is pressure-tested and sealed at the plant.</span></li>
-              <li><strong>Island wide</strong><span>Delivered through the dealer network in all 25 districts.</span></li>
-            </ul>
+            <span class="agents__count" data-agents-count hidden></span>
+          </div>
+
+          <p class="agents__state" data-agents-state>
+            Select your district above to see the authorised agents nearest you.
+          </p>
+          <ul class="agents__list" data-agents-list></ul>
+
+          <div class="agents__hotline">
+            <div>
+              <span class="agents__hotlabel">{data.hotlineLabel}</span>
+              <a class="agents__hotnum" href={`tel:${data.supportPhone.replace(/\s/g, "")}`}>
+                {data.supportPhone}
+              </a>
+            </div>
+            <p>Our hotline can direct you to the closest authorised agent.</p>
           </div>
         </div>
       </section>
 
-      <script type="application/json" id="shop-data" set:html={JSON.stringify(data)}></script>
+      <script type="application/json" id="refill-data" set:html={JSON.stringify(data)}></script>
       <script>
         import "../scripts/refill.ts";
       </script>
@@ -193,10 +147,10 @@ const seo = {
   ) : (
     <section class="shop-empty">
       <div class="wrap">
-        <h1>Ordering is temporarily unavailable</h1>
+        <h1>Refill prices are unavailable</h1>
         <p>
-          We could not load current refill prices. Please try again shortly, or
-          call {shop?.supportPhone ?? "+94 11 5 566 222"} to order by phone.
+          We could not load current prices. Please try again shortly, or call
+          {" "}{data.supportPhone} and we will help you order a refill.
         </p>
         <a href="/" class="btn btn--soft">Back to the home page</a>
       </div>
