@@ -38,7 +38,20 @@
         "sections.maritime",
         "sections.story",
         "sections.investors",
-        "sections.media"
+        "sections.media",
+        "sections.refill",
+        "sections.company-intro",
+        "sections.company-stats",
+        "sections.company-reach",
+        "sections.company-mission",
+        "sections.company-values",
+        "sections.company-timeline",
+        "sections.company-group",
+        "sections.company-recognition",
+        "sections.company-commitment",
+        "sections.company-governance",
+        "sections.company-films",
+        "sections.company-cta"
       ]
     }
   }

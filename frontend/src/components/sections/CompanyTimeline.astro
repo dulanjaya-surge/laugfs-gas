@@ -1,0 +1,46 @@
+---
+import "../../styles/about.css";
+import { pick, arr } from "../../lib/content";
+import { milestones as fbMiles, eras as fbEras, headings } from "../../data/about";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.eyebrow, headings.timeline.eyebrow);
+const title = pick(block?.title, headings.timeline.title);
+const hint = pick(block?.hint, headings.timeline.hint);
+const milestones = arr(block?.items, fbMiles);
+const eras = Array.isArray(block?.eras) && block.eras.length
+  ? block.eras.map((e: any) => e.label).filter(Boolean)
+  : fbEras;
+---
+
+<section class="ab-time" id="timeline" data-time>
+  <div class="wrap">
+    <div class="ab-time__intro">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2>{title}</h2>
+      <p>{hint}</p>
+    </div>
+  </div>
+
+  <div class="ab-time__viewport">
+    <div class="ab-time__eras" aria-hidden="true">
+      {eras.map((e) => <span class="ab-time__era" data-era={e}>{e}</span>)}
+    </div>
+
+    <ol class="ab-time__rail" data-time-rail>
+      {milestones.map((m) => (
+        <li class="ab-mile" data-era={m.era}>
+          <span class="ab-mile__year">{m.year}</span>
+          <span class="ab-mile__tick" aria-hidden="true"></span>
+          <h3>{m.title}</h3>
+          <p>{m.body}</p>
+        </li>
+      ))}
+    </ol>
+
+    <div class="ab-time__progress" aria-hidden="true">
+      <span data-time-bar></span>
+    </div>
+  </div>
+</section>

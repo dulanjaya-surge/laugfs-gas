@@ -176,23 +176,26 @@ it, so old links still land.
 
 ### Strapi
 
-- **`Company page`** (`api/company`, single type) — the whole page in one
-  editable record: `intro`, `stats`, `reach`, `mission`, `valuesBlock`,
-  `timeline`, `group`, `recognition`, `commitment`, `governance`, `films`,
-  `cta`, `seo`. Components live under `components/company/`.
-- A single type rather than dynamic-zone blocks: this page is a fixed
-  narrative, not a set of interchangeable blocks that get reordered per page.
-  The page builder still owns `Page`; this is the exception, deliberately.
-- Seeded from `src/seed/company.ts`, which mirrors the frontend fallbacks.
-- The controller populates every nested list and media field by name — add
-  there when you add a field, or it arrives as `null`.
+- An ordinary **`Page`** with slug `company`, built from twelve
+  `sections.company-*` blocks in the dynamic zone. A page belongs with the
+  other pages in the admin, not in Single Types — `Global` is the only single
+  type, because it is the only record that is genuinely site-wide.
+- Block components live in `components/sections/company-*.json`; the smaller
+  pieces they repeat (a stat, a milestone, an award, a policy) stay in
+  `components/company/`, since those are parts of a block, not blocks.
+- Seeded from `src/seed/pages.ts`, which mirrors the frontend fallbacks.
+- The page controller populates every nested list and media field by name —
+  add there when you add a field, or it arrives as `null`.
 
 ### Frontend
 
-- **`pages/company.astro`** — the page. **`lib/company.ts`** merges the CMS
-  record over `data/about.ts` field by field, so an empty box in Strapi shows
-  the original copy rather than a gap, and the page still renders in full if
-  the CMS is down.
+- **`components/sections/Company*.astro`** — one component per block, each
+  resolving its own fields against `data/about.ts` with `pick`/`arr`, exactly
+  like the home page sections. An empty box in Strapi shows the original copy
+  rather than a gap, and the page renders in full if the CMS is down.
+- **`pages/[...slug].astro`** renders it, and owns the two page-level concerns
+  the blocks share: the section rail (built from whichever company blocks the
+  page actually contains) and the client script.
 - **`data/about.ts`** is the fallback content, not dead code. Copy we wrote
   rather than took from the client's site is flagged `draft: true` there.
 - **`data/sri-lanka.ts`** — the map coastline, generated from open data. See
@@ -231,8 +234,6 @@ arranged directly with the agent, which is how the market actually works.
   search.
 - **`Authorised agent`** (`api/agent`) — name, address, phone(s), hours, map
   link, home-delivery flag, related to a district and a city.
-- **`Refill page settings`** (`api/shop`, single type) — the page heading,
-  intro, price/agent notes and the hotline number.
 - Seeded from `src/seed/shop.ts`: the client's published district price list
   (25 districts x 4 sizes) and one city per district to start. After the first
   run the CMS owns the data; price revisions are made in Strapi, never here.
@@ -244,7 +245,7 @@ arranged directly with the agent, which is how the market actually works.
 
 ### Frontend
 
-- **`pages/refill.astro`** — the page. Embeds a `#refill-data` island with the
+- **`components/sections/Refill.astro`** — the page's block. Embeds a `#refill-data` island with the
   sizes, districts, towns and a compact `district -> product -> price` lookup,
   so changing size or district re-prices with no request.
 - **`pages/api/agents.ts`** — the one thing not embedded: agents are filtered

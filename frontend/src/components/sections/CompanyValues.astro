@@ -1,0 +1,41 @@
+---
+import "../../styles/about.css";
+import { pick, arr } from "../../lib/content";
+import { values as fbValues, headings } from "../../data/about";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.eyebrow, headings.values.eyebrow);
+const title = pick(block?.title, headings.values.title);
+const values = arr(block?.items, fbValues);
+---
+
+<section class="ab-values" id="values" data-values>
+  <div class="wrap">
+    <div class="ab-values__head">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2>{title}</h2>
+    </div>
+
+    <div class="ab-values__grid">
+      <ol class="ab-values__index">
+        {values.map((v, i) => (
+          <li class:list={["ab-vindex", { "is-active": i === 0 }]} data-index={String(i)}>
+            <span>{String(i + 1).padStart(2, "0")}</span>{v.name}
+          </li>
+        ))}
+      </ol>
+
+      <div class="ab-values__stage" data-values-stage>
+        {values.map((v, i) => (
+          <article class:list={["ab-value", { "is-active": i === 0 }]} data-value={String(i)}>
+            <span class="ab-value__n">{String(i + 1).padStart(2, "0")} / {String(values.length).padStart(2, "0")}</span>
+            <h3>{v.name}</h3>
+            <p class="ab-value__body">{v.body}</p>
+            <p class="ab-value__proof">{v.proof}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

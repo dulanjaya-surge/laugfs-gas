@@ -1,6 +1,6 @@
 import type { Core } from '@strapi/strapi';
 import { seedShop, seedSampleAgents, SHOP_PUBLIC_ACTIONS } from './seed/shop';
-import { seedCompany, COMPANY_PUBLIC_ACTIONS } from './seed/company';
+import { seedPages } from './seed/pages';
 import { migrateGlobalLinks } from './seed/links';
 
 const PAGE_UID = 'api::page.page';
@@ -250,7 +250,7 @@ export default {
     try {
       await seedShop(strapi);
       await seedSampleAgents(strapi);
-      await seedCompany(strapi);
+      await seedPages(strapi);
       await migrateGlobalLinks(strapi);
     } catch (err) {
       strapi.log.error('[seed] Failed to seed shop content:');
@@ -263,7 +263,6 @@ export default {
         `${PAGE_UID}.findOne`,
         `${GLOBAL_UID}.find`,
         ...SHOP_PUBLIC_ACTIONS,
-        ...COMPANY_PUBLIC_ACTIONS,
       ]);
     } catch (err) {
       strapi.log.warn('[seed] Could not auto-grant public read access — set it in Settings → Roles → Public.');

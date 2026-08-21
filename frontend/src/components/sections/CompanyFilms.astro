@@ -1,0 +1,50 @@
+---
+import "../../styles/about.css";
+import { pick, arr, mediaUrl, mediaAlt } from "../../lib/content";
+import { films as fbFilms, headings } from "../../data/about";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.eyebrow, headings.films.eyebrow);
+const title = pick(block?.title, headings.films.title);
+const body = pick(block?.body, headings.films.body);
+
+const fbPoster = new Map(fbFilms.map((f) => [f.title, { url: f.poster ?? "", alt: f.posterAlt ?? "" }]));
+const films = arr(block?.items, fbFilms).map((f: any) => ({
+  ...f,
+  poster: mediaUrl(f.poster, f.poster ?? fbPoster.get(f.title)?.url ?? ""),
+  posterAlt: mediaAlt(f.poster, f.posterAlt ?? fbPoster.get(f.title)?.alt ?? f.title),
+  languages: f.languages ?? [],
+}));
+---
+
+<section class="ab-films" id="films">
+  <div class="wrap">
+    <div class="ab-films__head">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2>{title}</h2>
+      <p>{body}</p>
+    </div>
+
+    <div class="ab-films__grid">
+      {films.map((f) => (
+        <article class="ab-film">
+          {f.poster ? (
+            <img class="ab-film__img" src={f.poster} alt={f.posterAlt} loading="lazy" decoding="async" />
+          ) : (
+            <div class="ab-slot ab-slot--video"><span>VIDEO · {f.year}</span></div>
+          )}
+          <h3>{f.title}</h3>
+          <p>{f.body}</p>
+          <div class="ab-film__langs">
+            {f.languages.map((l, i) => (
+              <button type="button" class="ab-lang" aria-pressed={i === 0 ? "true" : "false"}>
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

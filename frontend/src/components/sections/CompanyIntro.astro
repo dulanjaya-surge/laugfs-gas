@@ -1,0 +1,41 @@
+---
+import "../../styles/about.css";
+import { pick, splitWords } from "../../lib/content";
+import { opening as fb } from "../../data/about";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.eyebrow, fb.eyebrow);
+const title = pick(block?.title, fb.title);
+const accent = pick(block?.accent, fb.accent);
+const body = pick(block?.body, fb.body);
+const standfirst = pick(block?.standfirst, fb.standfirst);
+const since = Number(block?.since ?? fb.since);
+
+const opening = { eyebrow, title, accent, body, standfirst, since };
+const years = new Date().getFullYear() - since;
+const headWords = splitWords(title, accent.split(" ").slice(-1)[0]);
+---
+
+<section class="ab-open" id="open">
+  <div class="wrap">
+    <div class="ab-open__grid">
+      <div class="ab-open__figure" aria-hidden="true">
+        <span class="ab-open__since">SINCE</span>
+        <span class="ab-open__year">{opening.since}</span>
+        <span class="ab-open__rule"></span>
+        <span class="ab-open__years"><b>{years}</b> years of LP Gas</span>
+      </div>
+      <div class="ab-open__body">
+        <span class="eyebrow">{opening.eyebrow}</span>
+        <h1 class="ab-open__title">
+          {headWords.map((w, i) => (
+            <span class="ab-word" style={`--d:${(0.15 + i * 0.07).toFixed(2)}s`}>{w.t}</span>
+          ))}
+        </h1>
+        <p class="ab-open__lede">{opening.body}</p>
+        <p class="ab-open__stand">{opening.standfirst}</p>
+      </div>
+    </div>
+  </div>
+</section>

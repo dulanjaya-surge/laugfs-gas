@@ -1,0 +1,166 @@
+---
+import "../../styles/shop.css";
+import { pick, splitAccent } from "../../lib/content";
+import { getRefillData } from "../../lib/shop";
+
+const { block } = Astro.props;
+
+// Prices, districts, towns and agents are collection types — this block only
+// carries the page's own copy, so the two are edited where they belong.
+const data = await getRefillData();
+const { products, districts } = data;
+
+const eyebrow = pick(block?.eyebrow, "REFILL PRICES & AUTHORISED AGENTS");
+const title = pick(block?.title, data.pageTitle);
+const accent = pick(block?.accent, data.pageAccent);
+const intro = pick(block?.intro, data.pageIntro);
+const priceNote = pick(block?.priceNote, data.priceNote);
+const agentNote = pick(block?.agentNote, data.agentNote);
+const hotlineLabel = pick(block?.hotlineLabel, data.hotlineLabel);
+const supportPhone = pick(block?.supportPhone, data.supportPhone);
+const currency = pick(block?.currency, data.currency);
+
+const heading = splitAccent(title, accent);
+
+// Prices are the whole point of this page, so if they cannot be loaded we say
+// so plainly rather than render a page with no numbers on it.
+const ready = products.length > 0 && districts.length > 0;
+
+// What the client script needs, with this block's copy folded in.
+const island = { ...data, currency, priceNote, agentNote };
+---
+
+{ready ? (
+  <>
+    <section class="refill">
+      <div class="wrap">
+        <div class="refill__intro">
+          <span class="eyebrow">{eyebrow}</span>
+          <h1 class="refill__title">
+            {heading.map((p) => (p.em ? <em>{p.t}</em> : p.t))}
+          </h1>
+          <p class="refill__lede">{intro}</p>
+        </div>
+
+        <div class="locator" data-locator>
+          <div class="locator__field">
+            <label for="district">Your district</label>
+            <div class="locator__select">
+              <select id="district">
+                <option value="">Select district…</option>
+                {districts.map((d) => <option value={d.slug}>{d.name}</option>)}
+              </select>
+            </div>
+          </div>
+          <div class="locator__field">
+            <label for="city">Your town</label>
+            <div class="locator__select">
+              <select id="city" disabled>
+                <option value="">All towns</option>
+              </select>
+            </div>
+          </div>
+          <p class="locator__status" data-locator-status role="status" aria-live="polite">
+            Choose your district to see refill prices.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sizes">
+      <div class="wrap">
+        <div class="sizes__grid">
+          <div class="sizes__stage">
+            <div class="sizes__glow"></div>
+            {products.map((p, i) => (
+              <img
+                class:list={["sizes__img", { "is-active": i === 0 }]}
+                data-img={p.slug}
+                src={p.image}
+                alt={p.imageAlt}
+                aria-hidden={i === 0 ? "false" : "true"}
+              />
+            ))}
+            <span class="sizes__badge" data-weight-badge>{products[0]?.weightLabel}</span>
+          </div>
+
+          <div class="sizes__panel">
+            <span class="sizes__label">Choose your cylinder</span>
+            <div class="sizes__cards" role="radiogroup" aria-label="Cylinder size">
+              {products.map((p, i) => (
+                <button
+                  type="button"
+                  class="sizecard"
+                  role="radio"
+                  data-size={p.slug}
+                  aria-checked={i === 0 ? "true" : "false"}
+                >
+                  <span class="sizecard__w">{p.weightLabel}</span>
+                  <span class="sizecard__t">{p.tagline}</span>
+                  <span class="sizecard__p" data-card-price={p.slug}>Select a district</span>
+                </button>
+              ))}
+            </div>
+
+            <div class="sizes__detail">
+              <div class="sizes__detailhead">
+                <h2 data-name>{products[0]?.name}</h2>
+                <div class="sizes__price">
+                  <span class="sizes__amount" data-price>—</span>
+                  <span class="sizes__per" data-price-for>refill price</span>
+                </div>
+              </div>
+              <p class="sizes__use" data-use>{products[0]?.useCase}</p>
+              <p class="sizes__desc" data-desc>{products[0]?.description}</p>
+              {priceNote && <p class="sizes__note">{priceNote}</p>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="agents" id="agents">
+      <div class="wrap">
+        <div class="agents__head">
+          <div>
+            <span class="eyebrow">WHERE TO REFILL</span>
+            <h2 data-agents-title>Authorised agents near you</h2>
+            {agentNote && <p class="agents__note">{agentNote}</p>}
+          </div>
+          <span class="agents__count" data-agents-count hidden></span>
+        </div>
+
+        <p class="agents__state" data-agents-state>
+          Select your district above to see the authorised agents nearest you.
+        </p>
+        <ul class="agents__list" data-agents-list></ul>
+
+        <div class="agents__hotline">
+          <div>
+            <span class="agents__hotlabel">{hotlineLabel}</span>
+            <a class="agents__hotnum" href={`tel:${supportPhone.replace(/\s/g, "")}`}>
+              {supportPhone}
+            </a>
+          </div>
+          <p>Our hotline can direct you to the closest authorised agent.</p>
+        </div>
+      </div>
+    </section>
+
+    <script type="application/json" id="refill-data" set:html={JSON.stringify(island)}></script>
+    <script>
+      import "../../scripts/refill.ts";
+    </script>
+  </>
+) : (
+  <section class="shop-empty">
+    <div class="wrap">
+      <h1>Refill prices are unavailable</h1>
+      <p>
+        We could not load current prices. Please try again shortly, or call
+        {" "}{supportPhone} and we will help you order a refill.
+      </p>
+      <a href="/" class="btn btn--soft">Back to the home page</a>
+    </div>
+  </section>
+)}

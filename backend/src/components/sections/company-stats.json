@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_sections_company_statss",
+  "info": {
+    "displayName": "Company stats",
+    "description": "The headline figures band"
+  },
+  "options": {},
+  "attributes": {
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "company.stat"
+    }
+  }
+}

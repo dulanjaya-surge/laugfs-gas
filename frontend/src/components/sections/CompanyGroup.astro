@@ -1,0 +1,69 @@
+---
+import "../../styles/about.css";
+import { pick, arr, mediaUrl, mediaAlt } from "../../lib/content";
+import { subsidiaries as fbSubs, chain as fbChain, headings } from "../../data/about";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.eyebrow, headings.group.eyebrow);
+const title = pick(block?.title, headings.group.title);
+const body = pick(block?.body, headings.group.body);
+const chainLabel = pick(block?.chainLabel, headings.group.chainLabel);
+
+// An uploaded image wins; otherwise the client's own photography, matched by
+// name so editing the copy never drops the picture beside it.
+const fbImage = new Map(fbSubs.map((s) => [s.name, { url: s.image ?? "", alt: s.imageAlt ?? "" }]));
+const subsidiaries = arr(block?.items, fbSubs).map((s: any) => ({
+  ...s,
+  image: mediaUrl(s.image, s.image ?? fbImage.get(s.name)?.url ?? ""),
+  imageAlt: mediaAlt(s.image, s.imageAlt ?? fbImage.get(s.name)?.alt ?? s.name),
+  facts: (s.facts ?? []).map((f: any) => (typeof f === "string" ? f : f.label)).filter(Boolean),
+}));
+const chain = arr(block?.chain, fbChain);
+---
+
+<section class="ab-co" id="companies">
+  <div class="wrap">
+    <div class="ab-co__head">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2>{title}</h2>
+      <p>{body}</p>
+    </div>
+
+    <div class="ab-co__grid">
+      {subsidiaries.map((s) => (
+        <article class="ab-cocard">
+          {s.image ? (
+            <img class="ab-cocard__img" src={s.image} alt={s.imageAlt} loading="lazy" decoding="async" />
+          ) : (
+            <div class="ab-slot ab-slot--wide"><span>IMAGE · {s.name}</span></div>
+          )}
+          <span class="ab-cocard__role">{s.role}</span>
+          <h3>{s.name}</h3>
+          <p>{s.body}</p>
+          <ul class="ab-cocard__facts">
+            {s.facts.map((f) => <li>{f}</li>)}
+          </ul>
+          {s.href && (
+            <a class="link-underline" href={s.href} target="_blank" rel="noopener noreferrer">
+              VISIT SITE →
+            </a>
+          )}
+        </article>
+      ))}
+    </div>
+
+    <div class="ab-chain">
+      <span class="ab-chain__label">{chainLabel}</span>
+      <ol class="ab-chain__row">
+        {chain.map((c, i) => (
+          <li class="ab-chain__step" style={`--i:${i}`}>
+            <span class="ab-chain__n">{String(i + 1).padStart(2, "0")}</span>
+            <span class="ab-chain__name">{c.step}</span>
+            <span class="ab-chain__body">{c.body}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

@@ -10,7 +10,21 @@ import Maritime from "../components/sections/Maritime.astro";
 import Story from "../components/sections/Story.astro";
 import Investors from "../components/sections/Investors.astro";
 import Media from "../components/sections/Media.astro";
+import Refill from "../components/sections/Refill.astro";
+import CompanyIntro from "../components/sections/CompanyIntro.astro";
+import CompanyStats from "../components/sections/CompanyStats.astro";
+import CompanyReach from "../components/sections/CompanyReach.astro";
+import CompanyMission from "../components/sections/CompanyMission.astro";
+import CompanyValues from "../components/sections/CompanyValues.astro";
+import CompanyTimeline from "../components/sections/CompanyTimeline.astro";
+import CompanyGroup from "../components/sections/CompanyGroup.astro";
+import CompanyRecognition from "../components/sections/CompanyRecognition.astro";
+import CompanyCommitment from "../components/sections/CompanyCommitment.astro";
+import CompanyGovernance from "../components/sections/CompanyGovernance.astro";
+import CompanyFilms from "../components/sections/CompanyFilms.astro";
+import CompanyCta from "../components/sections/CompanyCta.astro";
 import { getPage, getGlobal } from "../lib/strapi";
+import { sections as companyRail } from "../data/about";
 
 const sectionMap: Record<string, any> = {
   "sections.hero": Hero,
@@ -23,6 +37,19 @@ const sectionMap: Record<string, any> = {
   "sections.story": Story,
   "sections.investors": Investors,
   "sections.media": Media,
+  "sections.refill": Refill,
+  "sections.company-intro": CompanyIntro,
+  "sections.company-stats": CompanyStats,
+  "sections.company-reach": CompanyReach,
+  "sections.company-mission": CompanyMission,
+  "sections.company-values": CompanyValues,
+  "sections.company-timeline": CompanyTimeline,
+  "sections.company-group": CompanyGroup,
+  "sections.company-recognition": CompanyRecognition,
+  "sections.company-commitment": CompanyCommitment,
+  "sections.company-governance": CompanyGovernance,
+  "sections.company-films": CompanyFilms,
+  "sections.company-cta": CompanyCta,
 };
 
 const slugParam = Astro.params.slug;
@@ -30,34 +57,70 @@ const slug = (Array.isArray(slugParam) ? slugParam.join("/") : slugParam) || "ho
 
 const [page, global] = await Promise.all([getPage(slug), getGlobal()]);
 
-// If Strapi is unreachable, still render the home layout from component defaults
+// If Strapi is unreachable, still render these layouts from component defaults
 // so the site works offline / before the CMS is set up.
-const defaultHomeSections = [
-  "sections.hero",
-  "sections.capabilities",
-  "sections.energy",
-  "sections.numbers",
-  "sections.product",
-  "sections.safety",
-  "sections.maritime",
-  "sections.story",
-  "sections.investors",
-  "sections.media",
-].map((c) => ({ __component: c }));
+const fallbackSections: Record<string, string[]> = {
+  home: [
+    "sections.hero", "sections.capabilities", "sections.energy", "sections.numbers",
+    "sections.product", "sections.safety", "sections.maritime", "sections.story",
+    "sections.investors", "sections.media",
+  ],
+  refill: ["sections.refill"],
+  company: [
+    "sections.company-intro", "sections.company-stats", "sections.company-reach",
+    "sections.company-mission", "sections.company-values", "sections.company-timeline",
+    "sections.company-group", "sections.company-recognition", "sections.company-commitment",
+    "sections.company-governance", "sections.company-films", "sections.company-cta",
+  ],
+};
 
 let sections = page?.sections ?? [];
-if (!sections.length && slug === "home") sections = defaultHomeSections;
+if (!sections.length && fallbackSections[slug]) {
+  sections = fallbackSections[slug].map((c) => ({ __component: c }));
+}
 
 if (!sections.length) {
   return new Response(null, { status: 404, statusText: "Not found" });
 }
 
+// The company page is long enough to need wayfinding, and its blocks share one
+// client script. Both are page-level concerns, so they belong here rather than
+// being repeated inside every block.
+const hasCompanyBlocks = sections.some((b: any) =>
+  String(b.__component).startsWith("sections.company-"),
+);
+const rendered = new Set(sections.map((b: any) => String(b.__component)));
+const railItems = hasCompanyBlocks
+  ? companyRail.filter((s) => rendered.has(`sections.company-${s.block}`))
+  : [];
+
 const pageTitle = page?.title ? `LAUGFS Gas — ${page.title}` : "LAUGFS Gas";
 ---
 
 <Base title={pageTitle} global={global} seo={page?.seo}>
+  {railItems.length > 0 && (
+    <nav class="rail" aria-label="Page sections">
+      <ol>
+        {railItems.map((s) => (
+          <li>
+            <a href={`#${s.id}`} data-rail={s.id}>
+              <span class="rail__dot"></span>
+              <span class="rail__label">{s.label}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )}
+
   {sections.map((block: any) => {
     const Section = sectionMap[block.__component];
     return Section ? <Section block={block} global={global} /> : null;
   })}
+
+  {hasCompanyBlocks && (
+    <script>
+      import "../scripts/about.ts";
+    </script>
+  )}
 </Base>

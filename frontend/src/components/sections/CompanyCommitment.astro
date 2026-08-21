@@ -1,0 +1,45 @@
+---
+import "../../styles/about.css";
+import { pick, arr, mediaUrl, mediaAlt, splitAccent } from "../../lib/content";
+import { commitment as fb } from "../../data/about";
+
+const { block } = Astro.props;
+
+const commitment = {
+  eyebrow: pick(block?.eyebrow, fb.eyebrow),
+  title: pick(block?.title, fb.title),
+  accent: pick(block?.accent, fb.accent),
+  intro: pick(block?.intro, fb.intro),
+  items: arr(block?.items, fb.items).map((i: any) => ({
+    ...i,
+    image: mediaUrl(i.image, ""),
+    imageAlt: mediaAlt(i.image, i.caption ?? i.name),
+  })),
+};
+const commitHead = splitAccent(commitment.title, commitment.accent);
+---
+
+<section class="ab-commit" id="commitment">
+  <div class="wrap">
+    <div class="ab-commit__head">
+      <span class="eyebrow">{commitment.eyebrow}</span>
+      <h2>{commitHead.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+      <p>{commitment.intro}</p>
+    </div>
+
+    {commitment.items.map((item, i) => (
+      <article class:list={["ab-give", { "ab-give--flip": i % 2 === 1 }]}>
+        {item.image ? (
+          <img class="ab-give__img" src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
+        ) : (
+          <div class="ab-slot ab-slot--tall"><span>IMAGE · {item.caption}</span></div>
+        )}
+        <div class="ab-give__body">
+          <h3>{item.name}</h3>
+          <p>{item.body}</p>
+          <span class="ab-give__cap">{item.caption}</span>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,41 @@
+{
+  "collectionName": "components_sections_refills",
+  "info": {
+    "displayName": "Refill finder",
+    "description": "Copy for the refill price and agent finder. Prices, districts and agents are collection types."
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "priceNote": {
+      "type": "text"
+    },
+    "agentNote": {
+      "type": "text"
+    },
+    "hotlineLabel": {
+      "type": "string"
+    },
+    "supportPhone": {
+      "type": "string"
+    },
+    "supportEmail": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string",
+      "default": "LKR"
+    }
+  }
+}

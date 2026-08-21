@@ -1,0 +1,31 @@
+---
+import "../../styles/about.css";
+import { arr } from "../../lib/content";
+import { stats as fb } from "../../data/about";
+
+const { block } = Astro.props;
+const stats = arr(block?.items, fb);
+---
+
+<section class="ab-numbers" id="numbers">
+  <div class="wrap">
+    <div class="ab-numbers__grid">
+      {stats.map((s) => (
+        <div class="ab-stat">
+          <div class="ab-stat__figure">
+            <span class="ab-stat__value count">{s.value}</span>
+            {s.to && (
+              <>
+                <span class="ab-stat__arrow" aria-label="rising to">→</span>
+                <span class="ab-stat__value ab-stat__value--to count">{s.to}</span>
+              </>
+            )}
+            {s.unit && <span class="ab-stat__unit">{s.unit}</span>}
+          </div>
+          <span class="ab-stat__label">{s.label}</span>
+          <p class="ab-stat__note">{s.note}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

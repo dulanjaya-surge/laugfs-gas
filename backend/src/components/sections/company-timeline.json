@@ -1,8 +1,8 @@
 {
-  "collectionName": "components_company_reachs",
+  "collectionName": "components_sections_company_timelines",
   "info": {
-    "displayName": "Reach",
-    "description": "Map section"
+    "displayName": "Timeline",
+    "description": "The milestone timeline"
   },
   "options": {},
   "attributes": {
@@ -12,24 +12,18 @@
     "title": {
       "type": "string"
     },
-    "accent": {
-      "type": "string"
-    },
-    "body": {
-      "type": "text"
-    },
     "hint": {
       "type": "string"
     },
-    "sites": {
+    "eras": {
       "type": "component",
       "repeatable": true,
-      "component": "company.map-site"
+      "component": "company.fact"
     },
-    "routes": {
+    "items": {
       "type": "component",
       "repeatable": true,
-      "component": "company.map-route"
+      "component": "company.milestone"
     }
   }
 }

@@ -1,20 +1,19 @@
 /**
- * Company page seed.
+ * Company and Refill page seeds.
  *
- * Mirrors the fallback content in the frontend's src/data/about.ts, so a fresh
- * install shows the same page whether or not the CMS has been edited. Images
- * are left empty: the frontend falls back to the client's own photography, and
- * anything uploaded in Strapi takes over.
- *
- * Generated from the frontend data module — if you change the copy, change it
- * in Strapi, not here.
+ * Both are ordinary `Page` entries so they sit with the rest of the pages in
+ * the admin rather than off in Single Types — a page is a page. Their content
+ * mirrors the frontend fallbacks in src/data/about.ts, and the refill page's
+ * prices, districts and agents stay collection types because they are data,
+ * not page copy.
  */
 import type { Core } from '@strapi/strapi';
 
-const COMPANY_UID = 'api::company.company';
+const PAGE_UID = 'api::page.page';
 
-const companySeed = {
-  intro: {
+const companySections: any[] = [
+  {
+    __component: "sections.company-intro",
     eyebrow: "ABOUT LAUGFS GAS",
     title: "We started the year the market opened.",
     accent: "the market opened",
@@ -22,46 +21,50 @@ const companySeed = {
     standfirst: "A Sri Lankan energy company, listed, and still run from Colombo.",
     since: 2001,
   },
-  stats: [
-    {
-      value: "26",
-      unit: "",
-      label: "Regional distributors",
-      note: "Covering all 25 districts",
-    },
-    {
-      value: "10,000",
-      unit: "+",
-      label: "Dealers island wide",
-      note: "Every corner of Sri Lanka",
-    },
-    {
-      value: "3,000",
-      unit: "+ MT",
-      label: "Mabima storage",
-      note: "Storage and bottling, fully automated filling",
-    },
-    {
-      value: "30,000",
-      to: "45,000",
-      unit: "MT",
-      label: "Hambantota terminal",
-      note: "South Asia's largest LPG transshipment terminal, expanding",
-    },
-    {
-      value: "60,000",
-      unit: "MT / yr",
-      label: "Bangladesh volume",
-      note: "Imported, stored, bottled and distributed",
-    },
-    {
-      value: "3",
-      unit: "vessels",
-      label: "Owned LPG fleet",
-      note: "Gas Challenger, Gas Success, Gas Courage",
-    },
-  ],
-  reach: {
+  {
+    __component: "sections.company-stats",
+    items: [
+      {
+        value: "26",
+        unit: "",
+        label: "Regional distributors",
+        note: "Covering all 25 districts",
+      },
+      {
+        value: "10,000",
+        unit: "+",
+        label: "Dealers island wide",
+        note: "Every corner of Sri Lanka",
+      },
+      {
+        value: "3,000",
+        unit: "+ MT",
+        label: "Mabima storage",
+        note: "Storage and bottling, fully automated filling",
+      },
+      {
+        value: "30,000",
+        to: "45,000",
+        unit: "MT",
+        label: "Hambantota terminal",
+        note: "South Asia's largest LPG transshipment terminal, expanding",
+      },
+      {
+        value: "60,000",
+        unit: "MT / yr",
+        label: "Bangladesh volume",
+        note: "Imported, stored, bottled and distributed",
+      },
+      {
+        value: "3",
+        unit: "vessels",
+        label: "Owned LPG fleet",
+        note: "Gas Challenger, Gas Success, Gas Courage",
+      },
+    ],
+  },
+  {
+    __component: "sections.company-reach",
     eyebrow: "REACH",
     title: "How far the gas travels.",
     accent: "the gas",
@@ -140,7 +143,8 @@ const companySeed = {
       },
     ],
   },
-  mission: {
+  {
+    __component: "sections.company-mission",
     eyebrow: "MISSION",
     lead: "To be the leader in the market segments we operate in.",
     points: [
@@ -160,7 +164,8 @@ const companySeed = {
     philosophyTitle: "The guiding philosophy",
     philosophy: "A strong value system guides our business decisions and how we engage with our stakeholders. They shape our approach to sustainable, responsible, ethical and transparent engagement with all those we touch.",
   },
-  valuesBlock: {
+  {
+    __component: "sections.company-values",
     eyebrow: "WHAT WE HOLD TO",
     title: "Six values, and where each one showed up.",
     items: [
@@ -196,7 +201,8 @@ const companySeed = {
       },
     ],
   },
-  timeline: {
+  {
+    __component: "sections.company-timeline",
     eyebrow: "MILESTONES",
     title: "From an autogas workshop to a regional energy company.",
     hint: "Scroll to travel through it.",
@@ -298,7 +304,8 @@ const companySeed = {
       },
     ],
   },
-  group: {
+  {
+    __component: "sections.company-group",
     eyebrow: "THE GROUP",
     title: "The companies behind the cylinder.",
     body: "LAUGFS Gas PLC sits within LAUGFS Holdings. Three operating companies carry the gas from the source market to a kitchen door.",
@@ -381,7 +388,8 @@ const companySeed = {
       },
     ],
   },
-  recognition: {
+  {
+    __component: "sections.company-recognition",
     eyebrow: "RECOGNITION",
     title: "Twenty-six awards, and one certificate that mattered more.",
     isoTitle: "ISO 9001:2015",
@@ -546,7 +554,8 @@ const companySeed = {
       },
     ],
   },
-  commitment: {
+  {
+    __component: "sections.company-commitment",
     eyebrow: "SOCIAL COMMITMENT",
     title: "What we give back.",
     accent: "give back",
@@ -564,7 +573,8 @@ const companySeed = {
       },
     ],
   },
-  governance: {
+  {
+    __component: "sections.company-governance",
     eyebrow: "GOVERNANCE",
     title: "How we govern ourselves.",
     body: "Twelve published policies. Every one downloadable, in full.",
@@ -619,7 +629,8 @@ const companySeed = {
       },
     ],
   },
-  films: {
+  {
+    __component: "sections.company-films",
     eyebrow: "MEDIA",
     title: "Films.",
     body: "The national LPG awareness campaign runs in all three languages of the country. It is one film, told three ways.",
@@ -667,7 +678,8 @@ const companySeed = {
       },
     ],
   },
-  cta: {
+  {
+    __component: "sections.company-cta",
     title: "Where would you like to go next?",
     accent: "next",
     links: [
@@ -686,19 +698,52 @@ const companySeed = {
       },
     ],
   },
-  seo: {
-    metaTitle: "About LAUGFS Gas \u2014 25 years of LP Gas in Sri Lanka",
-    metaDescription: "LAUGFS Gas began in 2001 when Sri Lanka's LPG market opened. The network, the plants, the fleet, the milestones and the people behind the cylinder.",
-    noindex: true,
-  },
-};
+];
 
-export async function seedCompany(strapi: Core.Strapi) {
-  const existing = await strapi.documents(COMPANY_UID).findFirst();
+const refillSections: any[] = [
+{
+    __component: "sections.refill",
+    eyebrow: "REFILL PRICES & AUTHORISED AGENTS",
+    title: "Find your refill price and your nearest agent.",
+    accent: "refill price",
+    intro: "Refill prices are set district by district. Choose your cylinder size and where you are, and we will show the price and the authorised agents nearest you.",
+    priceNote: "Refills are exchanged for your empty cylinder. Prices are the published district refill prices and may be revised.",
+    agentNote: "Call an authorised agent directly to arrange your refill. They confirm availability and delivery for your area.",
+    hotlineLabel: "Not sure who to call?",
+    supportPhone: "+94 11 5 566 222",
+    supportEmail: "info@laugfsgas.lk",
+    currency: "LKR",
+  },
+];
+
+async function ensurePage(
+  strapi: Core.Strapi,
+  slug: string,
+  title: string,
+  sections: any[],
+  seo: Record<string, unknown>,
+) {
+  const existing = await strapi.documents(PAGE_UID).findFirst({ filters: { slug } });
   if (existing) return;
-  const created = await strapi.documents(COMPANY_UID).create({ data: companySeed as any });
-  await strapi.documents(COMPANY_UID).publish({ documentId: created.documentId });
-  strapi.log.info('[seed] Company page created and published.');
+  const created = await strapi.documents(PAGE_UID).create({
+    data: { title, slug, seo, sections } as any,
+  });
+  await strapi.documents(PAGE_UID).publish({ documentId: created.documentId });
+  strapi.log.info(`[seed] ${title} page created and published.`);
 }
 
-export const COMPANY_PUBLIC_ACTIONS = [`${COMPANY_UID}.find`];
+export async function seedPages(strapi: Core.Strapi) {
+  await ensurePage(strapi, 'company', 'Company', companySections, {
+    metaTitle: 'About LAUGFS Gas — 25 years of LP Gas in Sri Lanka',
+    metaDescription:
+      "LAUGFS Gas began in 2001 when Sri Lanka's LPG market opened. The network, the plants, the fleet, the milestones and the people behind the cylinder.",
+    noindex: true,
+  });
+
+  await ensurePage(strapi, 'refill', 'Refill', refillSections, {
+    metaTitle: 'Refill prices and authorised agents — LAUGFS Gas',
+    metaDescription:
+      'District-wise LP Gas refill prices for every cylinder size, and the authorised LAUGFS Gas agents nearest you.',
+    noindex: true,
+  });
+}

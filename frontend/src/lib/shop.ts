@@ -1,6 +1,6 @@
 // Shared refill-page helpers: the data island the page embeds, and the money
 // formatting used on both sides of the wire.
-import { getProducts, getDistricts, getShop, mediaUrl, mediaAlt } from "./strapi";
+import { getProducts, getDistricts, mediaUrl, mediaAlt } from "./strapi";
 
 export type PriceMap = Record<string, Record<string, number>>; // district -> product -> price
 
@@ -55,11 +55,7 @@ const FALLBACK_IMG = "/design/gas.png";
  * can be far too large to ship whole.
  */
 export async function getRefillData(): Promise<RefillData> {
-  const [productsRaw, districtsRaw, shop] = await Promise.all([
-    getProducts(),
-    getDistricts(),
-    getShop(),
-  ]);
+  const [productsRaw, districtsRaw] = await Promise.all([getProducts(), getDistricts()]);
 
   const products: RefillProduct[] = productsRaw
     .filter((p: any) => p.active !== false)
@@ -99,21 +95,24 @@ export async function getRefillData(): Promise<RefillData> {
     ]),
   );
 
+  // Page copy lives on the Refill page block now; these are the defaults it
+  // falls back to.
   return {
-    currency: shop?.currency ?? "LKR",
+    currency: "LKR",
     products,
     districts,
     cities,
     prices,
-    pageTitle: shop?.pageTitle ?? "Find your refill price and your nearest agent.",
-    pageAccent: shop?.pageAccent ?? "refill price",
+    pageTitle: "Find your refill price and your nearest agent.",
+    pageAccent: "refill price",
     pageIntro:
-      shop?.pageIntro ??
       "Refill prices are set district by district. Choose your cylinder size and where you are, and we will show the price and the authorised agents nearest you.",
-    priceNote: shop?.priceNote ?? "",
-    agentNote: shop?.agentNote ?? "",
-    hotlineLabel: shop?.hotlineLabel ?? "Not sure who to call?",
-    supportPhone: shop?.supportPhone ?? "+94 11 5 566 222",
-    supportEmail: shop?.supportEmail ?? "",
+    priceNote:
+      "Refills are exchanged for your empty cylinder. Prices are the published district refill prices and may be revised.",
+    agentNote:
+      "Call an authorised agent directly to arrange your refill. They confirm availability and delivery for your area.",
+    hotlineLabel: "Not sure who to call?",
+    supportPhone: "+94 11 5 566 222",
+    supportEmail: "info@laugfsgas.lk",
   };
 }

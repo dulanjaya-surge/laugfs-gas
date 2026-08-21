@@ -597,16 +597,16 @@ export const headings = {
 
 /** The page's own table of contents, used by the sticky section rail. */
 export const sections = [
-  { id: "open", label: "Since 2001" },
-  { id: "numbers", label: "The numbers" },
-  { id: "reach", label: "Reach" },
-  { id: "mission", label: "Mission" },
-  { id: "values", label: "Values" },
-  { id: "timeline", label: "Milestones" },
-  { id: "companies", label: "Companies" },
-  { id: "recognition", label: "Recognition" },
-  { id: "commitment", label: "Commitment" },
-  { id: "governance", label: "Governance" },
-  { id: "films", label: "Films" },
-  { id: "next", label: "Next" },
+  { id: "open", label: "Since 2001", block: "intro" },
+  { id: "numbers", label: "The numbers", block: "stats" },
+  { id: "reach", label: "Reach", block: "reach" },
+  { id: "mission", label: "Mission", block: "mission" },
+  { id: "values", label: "Values", block: "values" },
+  { id: "timeline", label: "Milestones", block: "timeline" },
+  { id: "companies", label: "Companies", block: "group" },
+  { id: "recognition", label: "Recognition", block: "recognition" },
+  { id: "commitment", label: "Commitment", block: "commitment" },
+  { id: "governance", label: "Governance", block: "governance" },
+  { id: "films", label: "Films", block: "films" },
+  { id: "next", label: "Next", block: "cta" },
 ];

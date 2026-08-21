@@ -1,0 +1,118 @@
+---
+import "../../styles/about.css";
+import { pick, arr, splitAccent } from "../../lib/content";
+import { reach as fbReach, hotspots as fbSites, routes as fbRoutes } from "../../data/about";
+import { mainland, islands } from "../../data/sri-lanka";
+
+const { block } = Astro.props;
+
+const reach = {
+  eyebrow: pick(block?.eyebrow, fbReach.eyebrow),
+  title: pick(block?.title, fbReach.title),
+  accent: pick(block?.accent, fbReach.accent),
+  body: pick(block?.body, fbReach.body),
+  hint: pick(block?.hint, fbReach.hint),
+};
+const reachHead = splitAccent(reach.title, reach.accent);
+
+// Ids are generated from the name so the pins and their cards stay paired
+// whether the rows come from the CMS or the fallback.
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+const hotspots = arr(block?.sites, fbSites).map((h: any, i: number) => ({
+  ...h,
+  id: h.id ?? slug(h.name ?? `site-${i}`),
+}));
+const routes = arr(block?.routes, fbRoutes).map((r: any, i: number) => ({
+  ...r,
+  id: r.id ?? slug(r.label ?? `route-${i}`),
+}));
+---
+
+<section class="ab-reach" id="reach">
+  <div class="wrap">
+    <div class="ab-reach__head">
+      <span class="eyebrow">{reach.eyebrow}</span>
+      <h2>{reachHead.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+      <p>{reach.body}</p>
+    </div>
+
+    <div class="ab-reach__grid">
+      <div class="ab-map">
+        <svg
+          viewBox="-110 -40 730 780"
+          role="img"
+          aria-label="Map of Sri Lanka showing LAUGFS Gas sites and the shipping routes leaving Hambantota"
+        >
+          <defs>
+            <linearGradient id="islandFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--map-island-a)" />
+              <stop offset="100%" stop-color="var(--map-island-b)" />
+            </linearGradient>
+            <!-- Arrowheads give each route a direction of travel -->
+            <marker
+              id="routeArrow" viewBox="0 0 10 10" refX="7" refY="5"
+              markerWidth="5" markerHeight="5" orient="auto-start-reverse"
+            >
+              <path d="M 0 1 L 9 5 L 0 9 z" class="ab-map__arrow" />
+            </marker>
+          </defs>
+
+          <!-- Routes leave Hambantota on their true bearings and sail around
+               the island rather than over it. -->
+          <g class="ab-map__routes">
+            {routes.map((r) => (
+              <path class="ab-map__route" data-route={r.id} d={r.d} fill="none" marker-end="url(#routeArrow)" />
+            ))}
+          </g>
+
+          <!-- Real coastline, from open geoBoundaries data -->
+          <path class="ab-map__island" d={mainland} fill="url(#islandFill)" />
+          {islands.map((d) => (
+            <path class="ab-map__island ab-map__islet" d={d} fill="url(#islandFill)" />
+          ))}
+
+          <circle class="ab-map__origin" cx="308.1" cy="591.3" r="13" />
+
+          <!-- Destination labels sit where each route leaves the frame -->
+          {routes.map((r) => (
+            <text class="ab-map__dest" x={r.lx} y={r.ly} text-anchor={r.anchor}>
+              {r.label}
+              <tspan class="ab-map__destnote" x={r.lx} dy="16">{r.note}</tspan>
+            </text>
+          ))}
+
+          {hotspots.map((h) => (
+            <g class="ab-map__spot" data-spot={h.id} tabindex="0" role="button" aria-label={h.name}>
+              <g transform={`translate(${h.x} ${h.y})`}>
+                <circle class="ab-map__pulse" r="16" />
+                <circle class="ab-map__pin" r="6.5" />
+                <!-- Generous invisible hit area; the pin itself is too small to tap -->
+                <circle class="ab-map__hit" r="22" />
+              </g>
+              <text class="ab-map__site" x={h.lx} y={h.ly} text-anchor={h.anchor}>{h.name}</text>
+            </g>
+          ))}
+        </svg>
+      </div>
+
+      <div class="ab-reach__panel">
+        <span class="ab-reach__hint" data-reach-hint>{reach.hint}</span>
+        <div class="ab-spots">
+          {hotspots.map((h, i) => (
+            <button
+              type="button"
+              class="ab-spotcard"
+              data-spotcard={h.id}
+              aria-pressed={i === 0 ? "true" : "false"}
+            >
+              <span class="ab-spotcard__kind">{h.kind}</span>
+              <span class="ab-spotcard__name">{h.name}</span>
+              {h.figure && <span class="ab-spotcard__figure">{h.figure}</span>}
+              <span class="ab-spotcard__body">{h.body}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

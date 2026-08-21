@@ -1,0 +1,52 @@
+---
+import "../../styles/about.css";
+import { pick, arr, mediaUrl } from "../../lib/content";
+import { policies as fbPolicies, headings } from "../../data/about";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.eyebrow, headings.governance.eyebrow);
+const title = pick(block?.title, headings.governance.title);
+const body = pick(block?.body, headings.governance.body);
+
+const policies = arr(block?.items, fbPolicies).map((p: any) => ({
+  ...p,
+  href: p.href || mediaUrl(p.file, ""),
+}));
+const policyGroups = Array.from(new Set(policies.map((p: any) => p.group)));
+---
+
+<section class="ab-gov" id="governance">
+  <div class="wrap">
+    <div class="ab-gov__head">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2>{title}</h2>
+      <p>{body}</p>
+    </div>
+
+    <div class="ab-gov__groups">
+      {policyGroups.map((g) => (
+        <div class="ab-gov__group">
+          <h3>{g}</h3>
+          <ul>
+            {policies.filter((p) => p.group === g).map((p) => (
+              <li>
+                {p.href ? (
+                  <a href={p.href} class="ab-policy">
+                    <span class="ab-policy__name">{p.name}</span>
+                    <span class="ab-policy__meta">PDF · V.1</span>
+                  </a>
+                ) : (
+                  <span class="ab-policy ab-policy--pending">
+                    <span class="ab-policy__name">{p.name}</span>
+                    <span class="ab-policy__meta">AWAITING FILE</span>
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

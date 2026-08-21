@@ -1,0 +1,35 @@
+---
+import "../../styles/about.css";
+import { pick, arr } from "../../lib/content";
+import { mission as fb } from "../../data/about";
+
+const { block } = Astro.props;
+
+const mission = {
+  eyebrow: pick(block?.eyebrow, fb.eyebrow),
+  lead: pick(block?.lead, fb.lead),
+  points: Array.isArray(block?.points) && block.points.length
+    ? block.points.map((p: any) => p.text).filter(Boolean)
+    : fb.points,
+  philosophyTitle: pick(block?.philosophyTitle, fb.philosophyTitle),
+  philosophy: pick(block?.philosophy, fb.philosophy),
+};
+---
+
+<section class="ab-mission" id="mission">
+  <div class="wrap">
+    <div class="ab-mission__grid">
+      <div>
+        <span class="eyebrow eyebrow--dim">{mission.eyebrow}</span>
+        <p class="ab-mission__lead">{mission.lead}</p>
+        <ul class="ab-mission__points">
+          {mission.points.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+      <aside class="ab-mission__aside">
+        <h2>{mission.philosophyTitle}</h2>
+        <p>{mission.philosophy}</p>
+      </aside>
+    </div>
+  </div>
+</section>

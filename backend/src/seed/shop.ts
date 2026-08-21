@@ -9,7 +9,6 @@ import type { Core } from '@strapi/strapi';
 
 const PRODUCT_UID = 'api::product.product';
 const DISTRICT_UID = 'api::district.district';
-const SHOP_UID = 'api::shop.shop';
 const CITY_UID = 'api::city.city';
 const AGENT_UID = 'api::agent.agent';
 
@@ -98,21 +97,6 @@ const priceTable: Array<[string, number, number, number, number]> = [
 const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-const shopSeed = {
-  currency: 'LKR',
-  pageTitle: 'Find your refill price and your nearest agent.',
-  pageAccent: 'refill price',
-  pageIntro:
-    'Refill prices are set district by district. Choose your cylinder size and where you are, and we will show the price and the authorised agents nearest you.',
-  priceNote:
-    'Refills are exchanged for your empty cylinder. Prices are the published district refill prices and may be revised.',
-  agentNote:
-    'Call an authorised agent directly to arrange your refill. They confirm availability and delivery for your area.',
-  hotlineLabel: 'Not sure who to call?',
-  supportPhone: '+94 11 5 566 222',
-  supportEmail: 'info@laugfsgas.lk',
-};
-
 // One city per district to begin with, so the finder works out of the box.
 // The client adds the towns they actually cover in Strapi.
 const seedCities = priceTable.map(([district]) => district);
@@ -167,29 +151,6 @@ export async function seedShop(strapi: Core.Strapi) {
     await strapi.documents(CITY_UID).publish({ documentId: doc.documentId });
   }
   strapi.log.info(`[seed] Cities ensured (${seedCities.length}).`);
-
-  // ---- Shop settings ------------------------------------------------------
-  const shop: any = await strapi.documents(SHOP_UID).findFirst();
-  if (!shop) {
-    const created = await strapi.documents(SHOP_UID).create({ data: shopSeed as any });
-    await strapi.documents(SHOP_UID).publish({ documentId: created.documentId });
-    strapi.log.info('[seed] Refill page settings created.');
-  } else {
-    // Fill only fields that are still empty, so a field added to the schema
-    // later arrives with sensible copy instead of a blank box in the admin —
-    // and anything the client has already written is left alone.
-    const patch = Object.fromEntries(
-      Object.entries(shopSeed).filter(([k, v]) => {
-        const current = shop[k];
-        return (current === null || current === undefined || current === '') && v !== '';
-      }),
-    );
-    if (Object.keys(patch).length) {
-      await strapi.documents(SHOP_UID).update({ documentId: shop.documentId, data: patch as any });
-      await strapi.documents(SHOP_UID).publish({ documentId: shop.documentId });
-      strapi.log.info(`[seed] Refill page settings backfilled: ${Object.keys(patch).join(', ')}`);
-    }
-  }
 }
 
 /**
@@ -243,5 +204,4 @@ export const SHOP_PUBLIC_ACTIONS = [
   `${PRODUCT_UID}.findOne`,
   `${DISTRICT_UID}.find`,
   `${DISTRICT_UID}.findOne`,
-  `${SHOP_UID}.find`,
 ];

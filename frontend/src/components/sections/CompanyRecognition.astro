@@ -1,0 +1,81 @@
+---
+import "../../styles/about.css";
+import { pick, arr, mediaUrl, mediaAlt } from "../../lib/content";
+import { awards as fbAwards, isoAward as fbIso, headings } from "../../data/about";
+
+const { block } = Astro.props;
+
+const eyebrow = pick(block?.eyebrow, headings.recognition.eyebrow);
+const title = pick(block?.title, headings.recognition.title);
+const isoAward = {
+  title: pick(block?.isoTitle, fbIso.title),
+  claim: pick(block?.isoClaim, fbIso.claim),
+  body: pick(block?.isoBody, fbIso.body),
+};
+
+const awards = arr(block?.items, fbAwards).map((a: any) => ({
+  ...a,
+  image: mediaUrl(a.image, ""),
+  imageAlt: mediaAlt(a.image, `${a.name}, ${a.year}`),
+}));
+
+const categories = ["All", ...Array.from(new Set(awards.map((a: any) => a.category)))];
+const countFor = (c: string) =>
+  c === "All" ? awards.length : awards.filter((a: any) => a.category === c).length;
+
+// The marquee needs the list twice so the loop has no seam.
+const marquee = [...awards, ...awards];
+---
+
+<section class="ab-rec" id="recognition">
+  <div class="wrap">
+    <div class="ab-rec__head">
+      <div>
+        <span class="eyebrow">{eyebrow}</span>
+        <h2>{title}</h2>
+      </div>
+    </div>
+
+    <div class="ab-iso">
+      <div class="ab-iso__mark" aria-hidden="true">
+        <span>ISO</span><b>9001</b><span>:2015</span>
+      </div>
+      <div>
+        <h3>{isoAward.claim}</h3>
+        <p>{isoAward.body}</p>
+      </div>
+    </div>
+
+    <div class="ab-rec__filters" role="group" aria-label="Filter awards by category">
+      {categories.map((c, i) => (
+        <button type="button" class="ab-chip" data-cat={c} aria-pressed={i === 0 ? "true" : "false"}>
+          {c}<span>{countFor(c)}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="ab-marquee" data-marquee>
+      <div class="ab-marquee__track" data-marquee-track>
+        {marquee.map((a, i) => (
+          <article class="ab-award" data-cat={a.category} data-dupe={i >= awards.length ? "1" : "0"}>
+            {a.image ? (
+              <img
+                class="ab-award__img"
+                src={a.image}
+                alt={a.imageAlt ?? `${a.name}, ${a.year}`}
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div class="ab-slot ab-award__slot" aria-hidden="true"><span>TROPHY</span></div>
+            )}
+            <span class="ab-award__year">{a.year}</span>
+            <span class="ab-award__name">{a.name}</span>
+            <span class="ab-award__result">{a.result}</span>
+          </article>
+        ))}
+      </div>
+    </div>
+    <p class="ab-rec__note" data-marquee-note>Hover to pause · select a category to filter</p>
+  </div>
+</section>

@@ -1,8 +1,8 @@
 {
-  "collectionName": "components_company_recognitions",
+  "collectionName": "components_sections_company_commitments",
   "info": {
-    "displayName": "Recognition",
-    "description": "Awards and certification"
+    "displayName": "Social commitment",
+    "description": "What the company gives back"
   },
   "options": {},
   "attributes": {
@@ -12,19 +12,16 @@
     "title": {
       "type": "string"
     },
-    "isoTitle": {
+    "accent": {
       "type": "string"
     },
-    "isoClaim": {
-      "type": "text"
-    },
-    "isoBody": {
+    "intro": {
       "type": "text"
     },
     "items": {
       "type": "component",
       "repeatable": true,
-      "component": "company.award"
+      "component": "company.commitment-item"
     }
   }
 }

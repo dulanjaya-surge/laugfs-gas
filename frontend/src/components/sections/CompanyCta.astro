@@ -1,0 +1,25 @@
+---
+import "../../styles/about.css";
+import { pick, arr, splitAccent } from "../../lib/content";
+import { close as fb } from "../../data/about";
+
+const { block } = Astro.props;
+
+const close = {
+  title: pick(block?.title, fb.title),
+  accent: pick(block?.accent, fb.accent),
+  links: arr(block?.links, fb.links),
+};
+const closeHead = splitAccent(close.title, close.accent);
+---
+
+<section class="ab-next" id="next">
+  <div class="wrap">
+    <h2>{closeHead.map((p) => (p.em ? <em>{p.t}</em> : p.t))}</h2>
+    <div class="ab-next__links">
+      {close.links.map((l) => (
+        <a href={l.href} class:list={["btn", l.primary ? "btn--gold" : "btn--soft"]}>{l.label}</a>
+      ))}
+    </div>
+  </div>
+</section>
